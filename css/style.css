@@ -102,8 +102,8 @@ h2 {
     margin: auto;
 }
 
-.yes, .no {
-	width: 40%;
+.yes, .no , .wrong_paper {
+	width: 30%;
 	min-width: 40px;
 	font-size: 1.1em;
 }

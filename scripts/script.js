@@ -25,6 +25,9 @@ function relevance (inp_type, obj) {
 			if (inp_type == "no") {
 				text = "Not Relevant";
 			}
+			if (inp_type == "wrong_paper") {
+				text = "Wrong Paper";
+			}
 			
 			$("#" + pmid).find("div.buttons").html("<p>" + text + "</p>");
 		},
@@ -40,6 +43,9 @@ function initial_relevance (inp_type) {
 	var text = "Not Relevant";
 	if (inp_type == "relevant") {
 		text = "Relevant";
+	}
+	if (inp_type == "wrong_paper") {
+		text = "Wrong Paper";
 	}
 
 	$.ajax({
@@ -65,6 +71,7 @@ function initial_relevance (inp_type) {
 $(document).ready(function () {
 	initial_relevance ("relevant");
 	initial_relevance ("non_relevant");
+	initial_relevance ("wrong_paper");
 });	//end ready
 
 //This part looks for the page num to load at the start of web application and then loads JPages
@@ -113,6 +120,10 @@ $(document).ready(function () {
 	
 	$(".no > button").click(function () {
 		relevance("no", $(this));
+	});	//end click
+	
+	$(".wrong_paper > button").click(function () {
+		relevance("wrong_paper", $(this));
 	});	//end click
 });	//end ready
 

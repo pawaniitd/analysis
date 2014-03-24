@@ -58,6 +58,9 @@
 			if ($_GET['type'] == "no") {
 				$table = "non_relevant";
 			}
+			if ($_GET['type'] == "wrong_paper") {
+				$table = "wrong_paper";
+			}
 		
 			$id = $_GET['value'];
 			$sql = "INSERT INTO $table (pmid) VALUES (?)";

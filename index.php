@@ -61,6 +61,7 @@
 						echo "\t\t\t\t<div class=\"buttons\">\n";
 							echo "\t\t\t\t\t<div class=\"yes\"><button class=\"green_button\">Relevant</button></div>\n";
 							echo "\t\t\t\t\t<div class=\"no\"><button class=\"red_button\">Non-Relevant</button></div>\n";
+							echo "\t\t\t\t\t<div class=\"wrong_paper\"><button class=\"red_button\">Wrong Paper</button></div>\n";
 						echo "\t\t\t\t</div>\n";	//end class=buttons
 					echo "\t\t\t</div>\n";	//end class=group
 				}
