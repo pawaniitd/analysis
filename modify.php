@@ -72,7 +72,17 @@
 			}
 			
 			$num = $_GET['pageNo'];
-			file_put_contents($file_pageNo, $num);
+			$initial_num = file_get_contents($file_pageNo);
+			$initial_num = intval($initial_num);
+			
+			if ($initial_num > 0) {
+				if ($num > $initial_num) {
+					file_put_contents($file_pageNo, $num);
+				}
+			}
+			else {
+				file_put_contents($file_pageNo, $num);
+			}
 		}
 		
 		
