@@ -89,5 +89,11 @@
 		}
 		
 		
+		//To add gene to database - By executing Perl script
+		if ($_GET['q'] == "add_gene") {
+			$name = $_GET['gene_name'];
+			echo shell_exec("perl programs/Bioperl/getGene_genbank.pl $name");
+		}
+		
 	}
 ?>

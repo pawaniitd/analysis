@@ -127,4 +127,35 @@ $(document).ready(function () {
 	});	//end click
 });	//end ready
 
-//
+//Script to add gene to the database - Submit form via JQuery and not HTML
+$(document).ready(function () {
+	$("#add_gene > form").submit(function( event ) {
+	
+		$(this).children("input:text").val('');
+		
+		$.ajax({
+			url: "modify.php",
+			data: $(this).serialize(),
+			type: "GET",
+			dataType: "text",
+			success: function(data) {
+				$( "#add_gene > form" ).toggle( "slide");
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+		console.log( $( this ).serialize() );
+		
+		event.preventDefault();	//This prevents form submittion via html default
+	});	//end submit
+});	//end ready
+
+
+// Add gene animation
+$(document).ready(function () {
+	$( "#add_gene_link" ).click(function() {
+	  $( "#add_gene > form" ).toggle( "slide");
+	});
+});	//end ready
+	
