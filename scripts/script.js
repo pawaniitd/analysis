@@ -145,17 +145,73 @@ $(document).ready(function () {
 				alert(errorThrown);
 			}
 		});	//end ajax
-		console.log( $( this ).serialize() );
 		
 		event.preventDefault();	//This prevents form submittion via html default
 	});	//end submit
 });	//end ready
 
 
-// Add gene animation
+// Add gene animation - using JQuery UI
 $(document).ready(function () {
 	$( "#add_gene_link" ).click(function() {
 	  $( "#add_gene > form" ).toggle( "slide");
 	});
 });	//end ready
+
+
+// Update the tags.json file on program load
+$(document).ready(function () {
+	$.ajax({
+		url: "modify.php",
+		data: {
+			q: "tags"
+		},
+		type: "GET",
+		dataType: "text",
+		success: function(data) {
+		},
+		error: function(xhr, status, errorThrown) {
+			alert(errorThrown);
+		}
+	});	//end ajax
 	
+});	//end ready
+
+// Add tags input and load tags (JQuery UI autocomplete) - using jQuery-Tags-Input (https://github.com/xoxco/jQuery-Tags-Input)
+$(document).ready(function () {
+	$(".download a").click(function () {
+		$pmid = $(this).parent().parent().parent().attr('id');
+	
+	
+		$("div#" + $pmid + " .tags").show("fade");
+		
+		$("div#" + $pmid + " .tags .input_tags").tagsInput({
+			autocomplete_url:'files/tags.json',
+			height: '20px',
+			width: '70%'
+		});
+	
+	});	//end click
+});	//end ready
+
+
+//Add tags to the database - Submit form via JQuery and not HTML
+$(document).ready(function () {
+	$(".tags").submit(function( event ) {
+	
+		$.ajax({
+			url: "modify.php",
+			data: $(this).serialize(),
+			type: "GET",
+			dataType: "json",
+			success: function(data) {
+				$("div#" + data[0] + " .tags").html("<p style=\"font-size: 1.2em;\">Tags : " + data[1] + "</p>");
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+		
+		event.preventDefault();	//This prevents form submittion via html default
+	});	//end submit
+});	//end ready

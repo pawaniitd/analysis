@@ -12,6 +12,8 @@
 	<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen, projection" />
 	<link rel="stylesheet" href="css/style.css" type="text/css" media="screen, projection" />
 	<link rel="stylesheet" href="css/jPages.css">
+	<link rel="stylesheet" type="text/css" href="css/jquery.tagsinput.css" />
+	<link rel="stylesheet" type="text/css" href="css/jquery-ui.css" />
 	
 	<!--[if gte IE 9]>
 		<style type="text/css">
@@ -22,9 +24,10 @@
 	<![endif]-->
 	
 	<script src="scripts/jquery-1.10.2.min.js" type="text/javascript"> </script>
-	<script src="scripts/jquery-ui-1.10.4.custom.min.js" type="text/javascript"></script>
+	<script src="scripts/jquery-ui.js" type="text/javascript"></script>
 	<script src="scripts/script.js" type="text/javascript"> </script>
 	<script src="scripts/jPages.js" type="text/javascript"></script>
+	<script src="scripts/jquery.tagsinput.js" type="text/javascript"></script>
 </head>
     
 <body>
@@ -75,7 +78,7 @@
 						
 						echo "\t\t\t\t<div class=\"ribbon gradient\"></div>\n";
 						
-						include 'includes/form.html';
+						include 'includes/form_tags.html';
 						
 					echo "\t\t\t</div>\n";	//end class=group
 				}
@@ -84,8 +87,8 @@
 		
 		<div id="add_gene">
 			<form style="display: none;">
-				<input type="hidden" name="q" value="add_gene">
-				<input id="inp_add_gene" type="text" name="gene_name">
+				<input type="hidden" name="q" value="add_gene" />
+				<input id="inp_add_gene" type="text" name="gene_name" />
 				<button type="submit">ADD</button>
 			</form>
 			<div id="add_gene_link">Add Gene</div>

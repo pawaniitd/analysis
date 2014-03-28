@@ -245,3 +245,8 @@ button {
     text-align: center;
     width: 70%;
 }
+
+.tags {
+	display: flex;
+	padding: 0 10%;
+}

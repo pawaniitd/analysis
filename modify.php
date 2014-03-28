@@ -3,6 +3,7 @@
 	error_reporting(0);
 
 	$file_pageNo = "files/pageNo.txt";
+	$file_tags = "files/tags.json";
 
 	function connectDB () {
 					$host = "localhost";
@@ -93,6 +94,47 @@
 		if ($_GET['q'] == "add_gene") {
 			$name = $_GET['gene_name'];
 			echo shell_exec("perl programs/Bioperl/getGene_genbank.pl $name");
+		}
+		
+		
+		//To get list of existing tags
+		if ($_GET['q'] == "tags") {
+			$table = 'tags';
+			$sql = "SELECT DISTINCT tag FROM $table";
+			
+			try {
+				$q = $conn -> prepare($sql);
+				$q -> execute() or die("failed-execute");
+			}
+			catch (PDOException $e) {
+				//Do your error handling here
+				echo $e->getMessage();
+			}
+			
+			$result = $q->fetchAll(PDO::FETCH_COLUMN, 0);
+			
+			file_put_contents($file_tags, json_encode($result));
+		}
+		
+		
+		//To upload list of existing tags
+		if ($_GET['q'] == "tags_upload") {
+			$id = $_GET['pmid'];
+			$tags_list = $_GET['tags'];
+			$tags = explode(',', $tags_list);
+			
+			$sql = "INSERT INTO tags (tag, pmid) VALUES (:tag_text, :pmid_value)";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(':tag_text', $tag);
+			$q->bindParam(':pmid_value', $id);
+			
+			foreach ($tags as $tag) {
+				$q->execute();
+			}
+			
+			
+			$array = array($id, $tags_list);
+			echo json_encode($array);
 		}
 		
 	}
