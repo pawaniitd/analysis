@@ -85,6 +85,11 @@
 			?>
 		</div>
 		
+		<div id="add_buttons">
+			<div id="add_gene_button"><a href="#">Add Gene</a></div>
+			<div id="add_drug_button"><a href="#">Add Drug</a></div>
+		</div>
+		
 		<div id="add_gene" title="Add new gene to database">
 			<form>
 				<fieldset>
@@ -95,9 +100,25 @@
 			</form>
 		</div>
 		
-		<div id="add_buttons">
-			<div id="add_gene_button"><a href="#">Add Gene</a></div>
+		<div id="add_drug" title="Add new drug to database">
+			<form>
+				<fieldset>
+					<input type="hidden" name="q" value="add_drug" />
+					<label for="add_drug_name">Name : </label>
+					<input id="add_drug_name" type="text" name="drug_name" />
+					<br />
+					<br />
+					<label for="add_drug_category">Category : </label>
+					<input id="add_drug_category" type="text" name="drug_category" />
+					<br />
+					<br />
+					<label for="add_drug_resistant">Resistant Type : </label>
+					<input id="add_drug_resistant" type="text" name="drug_resistant" />
+				</fieldset>	
+			</form>
 		</div>
+		
+		
 		
 	</div>
 </body>

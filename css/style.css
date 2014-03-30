@@ -89,6 +89,12 @@ h2 {
 	margin: auto;
 }
 
+#add_buttons a {
+	text-indent: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
 .buttons {
 	display: flex;
 	margin: 10px 0;
@@ -222,33 +228,42 @@ button {
     padding: 5px 10px;
 }
 
-#add_gene input {
-	width: 60px;
-	padding: 5px 0;
-	margin-left: 10px;
+fieldset {
+	display: block;
+	margin: auto;
+	width: 150px;
+}
+
+input {
+	background-color: #F1F1F1;
+    border-style: groove;
+    padding: 3px;
 }
 
 label {
+	display: block;
 	font-family: 'Ubuntu', sans-serif;
 	font-size: 1.2em;
 	font-weight: bold;
+	margin: 10px 0 5px;
 }
 
 #add_buttons {
+	display: flex;
 	width: 90%;
 	position: fixed;
 	bottom: 0px;
 	background-color: rgba(200,200,200,0.5);
 }
 
-#add_gene_button{
+#add_buttons div{
 	color: #444444;
     font-size: 1.2em;
     font-weight: bold;
     margin: 5px 10px;
 }
 
-#add_gene_button > a:hover {
+#add_buttons a:hover  {
 	color: #aaaaaa;
 }
 

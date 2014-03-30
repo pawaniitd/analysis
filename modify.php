@@ -91,6 +91,23 @@
 			echo shell_exec("perl programs/Bioperl/getGene_genbank.pl $name");
 		}
 		
+		//To add drug to database
+		if ($_GET['q'] == "add_drug") {
+			$name = $_GET['drug_name'];
+			$category = $_GET['drug_category'];
+			$resistant = $_GET['drug_resistant'];
+			
+			empty($category) ? null : $category;
+			empty($resistant) ? null : $resistant;
+			
+			$sql = "INSERT INTO drugs (name, category, resistant) VALUES (:n, :c, :r)";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(':n', $name);
+			$q->bindParam(':c', $category);
+			$q->bindParam(':r', $resistant);
+			$q->execute();
+		}
+		
 		
 		//To get list of existing tags
 		if ($_GET['q'] == "tags") {

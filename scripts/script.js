@@ -132,8 +132,8 @@ $(document).ready(function () {
 
 	$( "#add_gene" ).dialog({
 		autoOpen: false,
-		height: 130,
-		width: 220,
+		height: 180,
+		width: 250,
 		modal: true,
 		dialogClass: "no-close",
 		buttons: {
@@ -144,6 +144,7 @@ $(document).ready(function () {
 					type: "GET",
 					dataType: "text",
 					success: function(data) {
+						$("#add_gene input:text").val('');
 					},
 					error: function(xhr, status, errorThrown) {
 						alert(errorThrown);
@@ -170,6 +171,65 @@ $(document).ready(function () {
 		$( "#add_gene" ).dialog( "open" );
 	});
 });	//end ready
+
+/*
+ *	Feature - Add Drug	------------------------------------------------------------------------
+ */
+ 
+//Script to add drug to the database - JQuery UI Dialog Form
+$(document).ready(function () {
+
+	$( "#add_drug" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 250,
+		modal: true,
+		dialogClass: "no-close",
+		buttons: {
+			"Add": function() {
+				$.ajax({
+					url: "modify.php",
+					data: $("#add_drug > form").serialize(),
+					type: "GET",
+					dataType: "text",
+					success: function(data) {
+						$("#add_drug input:text").val('');
+					},
+					error: function(xhr, status, errorThrown) {
+						alert(errorThrown);
+					}
+				});	//end ajax
+
+				$( this ).dialog( "close" );
+			},
+			Cancel: function() {
+				$( this ).dialog( "close" );
+			}
+		},
+		close: function() {
+		}
+    });
+});	//end ready
+
+// Add drug modal dialogue open
+$(document).ready(function () {
+	$( "#add_drug_button" ).click(function() {
+	
+		//Set autocomplete for Category
+		$( "#add_drug_category" ).autocomplete({
+			source: "php/autocomplete_data.php?q=drug_category"
+		});
+		
+		//Set autocomplete for Resistant type
+		$( "#add_drug_resistant" ).autocomplete({
+			source: "php/autocomplete_data.php?q=drug_resistant"
+		});
+		
+		$( "#add_drug" ).dialog( "open" );
+	});
+});	//end ready
+ 
+/*--------------------------------------------------------------------------------------------*/
 
 
 // Update the tags.json file on program load
