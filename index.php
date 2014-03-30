@@ -85,13 +85,18 @@
 			?>
 		</div>
 		
-		<div id="add_gene">
-			<form style="display: none;">
-				<input type="hidden" name="q" value="add_gene" />
-				<input id="inp_add_gene" type="text" name="gene_name" />
-				<button type="submit">ADD</button>
+		<div id="add_gene" title="Add new gene to database">
+			<form>
+				<fieldset>
+					<input type="hidden" name="q" value="add_gene" />
+					<label for="inp_add_gene">Name : </label>
+					<input id="inp_add_gene" type="text" name="gene_name" />
+				</fieldset>
 			</form>
-			<div id="add_gene_link">Add Gene</div>
+		</div>
+		
+		<div id="add_buttons">
+			<div id="add_gene_button"><a href="#">Add Gene</a></div>
 		</div>
 		
 	</div>

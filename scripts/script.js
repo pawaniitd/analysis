@@ -127,34 +127,47 @@ $(document).ready(function () {
 	});	//end click
 });	//end ready
 
-//Script to add gene to the database - Submit form via JQuery and not HTML
+//Script to add gene to the database - JQuery UI Dialog Form
 $(document).ready(function () {
-	$("#add_gene > form").submit(function( event ) {
-	
-		$(this).children("input:text").val('');
-		
-		$.ajax({
-			url: "modify.php",
-			data: $(this).serialize(),
-			type: "GET",
-			dataType: "text",
-			success: function(data) {
-				$( "#add_gene > form" ).toggle( "slide");
+
+	$( "#add_gene" ).dialog({
+		autoOpen: false,
+		height: 130,
+		width: 220,
+		modal: true,
+		dialogClass: "no-close",
+		buttons: {
+			"Add": function() {
+				$.ajax({
+					url: "modify.php",
+					data: $("#add_gene > form").serialize(),
+					type: "GET",
+					dataType: "text",
+					success: function(data) {
+					},
+					error: function(xhr, status, errorThrown) {
+						alert(errorThrown);
+					}
+				});	//end ajax
+				
+				$("#add_gene > form").children("input:text").val('');
+
+				$( this ).dialog( "close" );
 			},
-			error: function(xhr, status, errorThrown) {
-				alert(errorThrown);
+			Cancel: function() {
+				$( this ).dialog( "close" );
 			}
-		});	//end ajax
-		
-		event.preventDefault();	//This prevents form submittion via html default
-	});	//end submit
+		},
+		close: function() {
+		}
+    });
 });	//end ready
 
 
-// Add gene animation - using JQuery UI
+// Add gene modal dialogue open
 $(document).ready(function () {
-	$( "#add_gene_link" ).click(function() {
-	  $( "#add_gene > form" ).toggle( "slide");
+	$( "#add_gene_button" ).click(function() {
+		$( "#add_gene" ).dialog( "open" );
 	});
 });	//end ready
 

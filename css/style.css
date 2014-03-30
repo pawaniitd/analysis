@@ -212,38 +212,44 @@ button {
 
 }
 
-#add_gene {
-	position: fixed;
-	bottom: 5px;
-	left: 0px;
-	width: 120px;
+
+.no-close .ui-dialog-titlebar-close {
+  display: none;
 }
 
 #add_gene  > form{
-	background-color: #800080;
-    display: block;
+	display: block;
     padding: 5px 10px;
 }
 
 #add_gene input {
-	width: 90%;
-	display: block;
-	margin: 10px auto;
+	width: 60px;
 	padding: 5px 0;
+	margin-left: 10px;
 }
 
-#add_gene button {
-	padding: 0px 10px;
+label {
+	font-family: 'Ubuntu', sans-serif;
+	font-size: 1.2em;
+	font-weight: bold;
 }
 
-#add_gene_link {
-	background-color: #DDDDDD;
-    color: #444444;
-    font-size: 1.5em;
+#add_buttons {
+	width: 90%;
+	position: fixed;
+	bottom: 0px;
+	background-color: rgba(200,200,200,0.5);
+}
+
+#add_gene_button{
+	color: #444444;
+    font-size: 1.2em;
     font-weight: bold;
-    padding: 10px 0;
-    text-align: center;
-    width: 70%;
+    margin: 5px 10px;
+}
+
+#add_gene_button > a:hover {
+	color: #aaaaaa;
 }
 
 .tags {

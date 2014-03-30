@@ -5,18 +5,13 @@
 	$file_pageNo = "files/pageNo.txt";
 	$file_tags = "files/tags.json";
 
-	function connectDB () {
-					$host = "localhost";
-					$db_name = "eumentis_tb_papers";
-					$user = "pawn";
-					$pass = "ppppp";
-					
-					return new PDO("pgsql:host=localhost;dbname=$db_name", $user, $pass);
-				}
+	include 'includes/connectDB.inc';
 				
-				$conn = connectDB();
-				$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	$conn = connectDB();
+	//$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+				
+				
 	if (isset($_GET['q'])) {
 	
 		//This loads the page no. to load at the start of application, based on the page last seen
