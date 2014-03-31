@@ -108,6 +108,39 @@
 			$q->execute();
 		}
 		
+		//Load options for selection of drugs
+		if ($_GET['q'] == "select_drug") {
+			$sql = "SELECT id, name FROM drugs";
+
+			$q = $conn -> prepare($sql);
+			$q -> execute() or die("failed-execute");
+
+			$result = $q->fetchAll(PDO::FETCH_ASSOC);
+
+			$arr = array();
+			foreach ($result as $x) {
+				$arr[$x['id']] = trim($x['name']);
+			}
+
+			echo json_encode($arr);
+		}
+		
+		//Load options for selection of genes
+		if ($_GET['q'] == "select_gene") {
+			$sql = "SELECT id, name FROM h37rv_genes";
+
+			$q = $conn -> prepare($sql);
+			$q -> execute() or die("failed-execute");
+
+			$result = $q->fetchAll(PDO::FETCH_ASSOC);
+
+			$arr = array();
+			foreach ($result as $x) {
+				$arr[$x['id']] = trim($x['name']);
+			}
+
+			echo json_encode($arr);
+		}
 		
 		//To get list of existing tags
 		if ($_GET['q'] == "tags") {
@@ -126,6 +159,18 @@
 			$result = $q->fetchAll(PDO::FETCH_COLUMN, 0);
 			
 			file_put_contents($file_tags, json_encode($result));
+		}
+		
+		//To add drug-gene to database
+		if ($_GET['q'] == "add_drug-gene") {
+			$drug_name = $_GET['drug_name'];
+			$gene_name = $_GET['gene_name'];
+						
+			$sql = "INSERT INTO drug_gene (drug_id, gene_id) VALUES (:did, :gid)";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(':did', $drug_name);
+			$q->bindParam(':gid', $gene_name);
+			$q->execute();
 		}
 		
 		
@@ -148,6 +193,8 @@
 			$array = array($id, $tags_list);
 			echo json_encode($array);
 		}
+		
+		
 		
 	}
 ?>

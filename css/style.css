@@ -234,6 +234,14 @@ fieldset {
 	width: 150px;
 }
 
+#add_drug-gene fieldset {
+	width: 100%;
+}
+
+#add_drug-gene form {
+	margin: 20px 0px;
+}
+
 input {
 	background-color: #F1F1F1;
     border-style: groove;
@@ -250,7 +258,6 @@ label {
 
 #add_buttons {
 	display: flex;
-	width: 90%;
 	position: fixed;
 	bottom: 0px;
 	background-color: rgba(200,200,200,0.5);
@@ -270,4 +277,9 @@ label {
 .tags {
 	display: flex;
 	padding: 0 10%;
+}
+
+/* To set the height of the chosen select menu */
+.chosen-container .chosen-results {
+    max-height:100px !important;
 }

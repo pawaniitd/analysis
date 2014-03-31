@@ -67,6 +67,21 @@ function initial_relevance (inp_type) {
 	});	//end ajax
 }
 
+//Create list of options for select tag
+function setOptions (data) {
+	var txt = '<option value=""></option>';	//This is added for Chosen to work
+	$.each( data, function( key, value ) {
+		txt = txt + "<option value=\"" + key + "\">" + value + "</option>\n";
+	});	//end each
+	return txt;
+}
+
+
+
+
+
+
+
 //Set relevance data for read papers (done earlier)
 $(document).ready(function () {
 	initial_relevance ("relevant");
@@ -230,6 +245,102 @@ $(document).ready(function () {
 });	//end ready
  
 /*--------------------------------------------------------------------------------------------*/
+
+/*	************************************
+ *	Feature - Add Drug-Gene	
+	************************************/
+ 
+//Script to add drug-gene to the database - JQuery UI Dialog Form
+$(document).ready(function () {
+
+	$( "#add_drug-gene" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 300,
+		modal: true,
+		dialogClass: "no-close",
+		buttons: {
+			"Add": function() {
+				$.ajax({
+					url: "modify.php",
+					data: $("#add_drug-gene > form").serialize(),
+					type: "GET",
+					dataType: "text",
+					success: function(data) {
+						$("#add_drug-gene_button img").show("fade").delay(5000).hide("fade");	//To show tick mark for 5 sec upon success
+					},
+					error: function(xhr, status, errorThrown) {
+						alert(errorThrown);
+					}
+				});	//end ajax
+
+				$( this ).dialog( "close" );
+			},
+			Cancel: function() {
+				$( this ).dialog( "close" );
+			}
+		},
+		close: function() {
+		}
+    });
+});	//end ready
+
+// Add drug-gene modal dialogue open
+$(document).ready(function () {
+	$( "#add_drug-gene_button" ).click(function() {
+	
+		$("#select_drug_name").val('').trigger("chosen:updated");
+		$("#select_gene_name").val('').trigger("chosen:updated");
+	
+		//Load option list for Drug names
+		$.ajax({
+			url: "modify.php",
+			data: {
+				q: "select_drug"
+			},
+			type: "GET",
+			dataType: "json",
+			success: function(data) {
+				var txt = setOptions(data);
+				$("#select_drug_name").html(txt);
+				$("#select_drug_name").chosen({	//Activate chosen on the select tag
+					disable_search_threshold: 5,
+					width: "95%"
+				});	
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+		
+		//Load option list for Gene names
+		$.ajax({
+			url: "modify.php",
+			data: {
+				q: "select_gene"
+			},
+			type: "GET",
+			dataType: "json",
+			success: function(data) {
+				var txt = setOptions(data);
+				$("#select_gene_name").html(txt);
+				$("#select_gene_name").chosen({	//Activate chosen on the select tag
+					disable_search_threshold: 5,
+					width: "95%"
+				});
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+		
+		$( "#add_drug-gene" ).dialog( "open" );
+		
+	});
+});	//end ready
+ 
+/*--------------------------------------------------------------------------------------------*/
+
 
 
 // Update the tags.json file on program load

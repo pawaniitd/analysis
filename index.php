@@ -11,9 +11,11 @@
 	
 	<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen, projection" />
 	<link rel="stylesheet" href="css/style.css" type="text/css" media="screen, projection" />
+	
 	<link rel="stylesheet" href="css/jPages.css">
 	<link rel="stylesheet" type="text/css" href="css/jquery.tagsinput.css" />
 	<link rel="stylesheet" type="text/css" href="css/jquery-ui.css" />
+	<link rel="stylesheet" type="text/css" href="css/chosen.min.css" />
 	
 	<!--[if gte IE 9]>
 		<style type="text/css">
@@ -25,9 +27,11 @@
 	
 	<script src="scripts/jquery-1.10.2.min.js" type="text/javascript"> </script>
 	<script src="scripts/jquery-ui.js" type="text/javascript"></script>
-	<script src="scripts/script.js" type="text/javascript"> </script>
 	<script src="scripts/jPages.js" type="text/javascript"></script>
 	<script src="scripts/jquery.tagsinput.js" type="text/javascript"></script>
+	<script src="scripts/chosen.jquery.min.js" type="text/javascript"></script>
+	
+	<script src="scripts/script.js" type="text/javascript"> </script>
 </head>
     
 <body>
@@ -86,8 +90,15 @@
 		</div>
 		
 		<div id="add_buttons">
-			<div id="add_gene_button"><a href="#">Add Gene</a></div>
+			<div id="add_gene_button">
+				<a href="#">Add Gene</a>
+				
+			</div>
 			<div id="add_drug_button"><a href="#">Add Drug</a></div>
+			<div id="add_drug-gene_button">
+				<a href="#">Add Drug-Gene</a>
+				<img src="files/tick1.png" alt="Left" height="8" width="10" style="display: none;">
+			</div>
 		</div>
 		
 		<div id="add_gene" title="Add new gene to database">
@@ -114,6 +125,22 @@
 					<br />
 					<label for="add_drug_resistant">Resistant Type : </label>
 					<input id="add_drug_resistant" type="text" name="drug_resistant" />
+				</fieldset>	
+			</form>
+		</div>
+		
+		<div id="add_drug-gene" title="Add new drug-gene to database">
+			<form>
+				<fieldset>
+					<input type="hidden" name="q" value="add_drug-gene" />
+					<select id="select_drug_name" name="drug_name" data-placeholder="Choose a Drug...">
+						
+					</select>
+					<br />
+					<br />
+					<select id="select_gene_name" name="gene_name" data-placeholder="Choose a Gene...">
+						
+					</select>
 				</fieldset>	
 			</form>
 		</div>
