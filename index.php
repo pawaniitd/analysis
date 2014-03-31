@@ -37,13 +37,13 @@
 <body>
 	<div id="main">
 		<div id="left">
-			<a href="#" style="display: block;"><img src="files/left1.png" alt="Left" height="60" width="100"></a>
+			<a href="#" style="display: block;"><img src="images/left1.png" alt="Left" height="60" width="100"></a>
 		</div>
 		
 		<div id="count"></div>
 			
 		<div id="right">
-			<a href="#" style="display: block;"><img src="files/right1.png" alt="Right" height="60" width="100"></a>
+			<a href="#" style="display: block;"><img src="images/right1.png" alt="Right" height="60" width="100"></a>
 		</div>
 		<div class="holder"></div>
 		<div id="content">
@@ -92,15 +92,15 @@
 		<div id="add_buttons">
 			<div id="add_gene_button">
 				<a href="#">Add Gene</a>
-				<img src="files/tick1.png" alt="Left" height="8" width="10" style="display: none;">
+				<img src="images/tick1.png" alt="Left" height="8" width="10" style="display: none;">
 			</div>
 			<div id="add_drug_button">
 				<a href="#">Add Drug</a>
-				<img src="files/tick1.png" alt="Left" height="8" width="10" style="display: none;">
+				<img src="images/tick1.png" alt="Left" height="8" width="10" style="display: none;">
 			</div>
 			<div id="add_drug-gene_button">
 				<a href="#">Add Drug-Gene</a>
-				<img src="files/tick1.png" alt="Left" height="8" width="10" style="display: none;">
+				<img src="images/tick1.png" alt="Left" height="8" width="10" style="display: none;">
 			</div>
 		</div>
 		
