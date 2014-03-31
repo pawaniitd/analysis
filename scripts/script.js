@@ -160,6 +160,7 @@ $(document).ready(function () {
 					dataType: "text",
 					success: function(data) {
 						$("#add_gene input:text").val('');
+						$("#add_gene_button img").show("fade").delay(5000).hide("fade");	//To show tick mark for 5 sec upon success
 					},
 					error: function(xhr, status, errorThrown) {
 						alert(errorThrown);
@@ -209,6 +210,7 @@ $(document).ready(function () {
 					dataType: "text",
 					success: function(data) {
 						$("#add_drug input:text").val('');
+						$("#add_drug_button img").show("fade").delay(5000).hide("fade");	//To show tick mark for 5 sec upon success
 					},
 					error: function(xhr, status, errorThrown) {
 						alert(errorThrown);

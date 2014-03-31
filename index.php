@@ -92,9 +92,12 @@
 		<div id="add_buttons">
 			<div id="add_gene_button">
 				<a href="#">Add Gene</a>
-				
+				<img src="files/tick1.png" alt="Left" height="8" width="10" style="display: none;">
 			</div>
-			<div id="add_drug_button"><a href="#">Add Drug</a></div>
+			<div id="add_drug_button">
+				<a href="#">Add Drug</a>
+				<img src="files/tick1.png" alt="Left" height="8" width="10" style="display: none;">
+			</div>
 			<div id="add_drug-gene_button">
 				<a href="#">Add Drug-Gene</a>
 				<img src="files/tick1.png" alt="Left" height="8" width="10" style="display: none;">
