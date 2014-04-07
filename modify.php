@@ -4,6 +4,7 @@
 
 	$file_pageNo = "files/pageNo.txt";
 	$file_tags = "files/tags.json";
+	$file_drug_gene = "files/drug-gene_options.html";
 
 	include 'includes/connectDB.inc';
 				
@@ -163,14 +164,31 @@
 		
 		//To add drug-gene to database
 		if ($_GET['q'] == "add_drug-gene") {
-			$drug_name = $_GET['drug_name'];
-			$gene_name = $_GET['gene_name'];
-						
+			$drug_id = $_GET['drug_name'];
+			$gene_id = $_GET['gene_name'];
+			
 			$sql = "INSERT INTO drug_gene (drug_id, gene_id) VALUES (:did, :gid)";
 			$q = $conn -> prepare($sql);
-			$q->bindParam(':did', $drug_name);
-			$q->bindParam(':gid', $gene_name);
+			$q->bindParam(':did', $drug_id);
+			$q->bindParam(':gid', $gene_id);
 			$q->execute();
+			
+			$sql = "SELECT id FROM drug_gene WHERE drug_id=:did and gene_id=:gid";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(':did', $drug_id);
+			$q->bindParam(':gid', $gene_id);
+			$q->execute();
+			$result = $q->fetch(PDO::FETCH_ASSOC);
+			$dg_id = $result['id'];
+			
+			$sql = "SELECT * FROM view_drug_gene WHERE id=:dgid";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(':dgid', $dg_id);
+			$q->execute();
+			$x = $q->fetch(PDO::FETCH_ASSOC);
+			
+			$data = '<option value="' . $x['id'] . '">' . trim($x['drug_name']) . ' and ' . trim($x['gene_name']) . '</option>' . "\n";
+			file_put_contents ($file_drug_gene, $data, FILE_APPEND);	//Update the file with drug-gene options
 		}
 		
 		
@@ -194,7 +212,7 @@
 			echo json_encode($array);
 		}
 		
-		
+
 		
 	}
 ?>
