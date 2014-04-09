@@ -123,6 +123,7 @@ $(document).ready(function () {
 		callback : function(pages, items) {
 			$("#count").html(pages.current + " of " + pages.count);
 			pageNo = pages.current;
+			$("#mutation_forms").hide("fade");
 		}
 	});	//end jPages
 });	//end ready
@@ -343,6 +344,7 @@ $(document).ready(function () {
  
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
+
 /* Tags -----------------------------------------------------------------------------------------------------------------------------------------------------
 Add tags input and load tags (JQuery UI autocomplete) - using jQuery-Tags-Input (https://github.com/xoxco/jQuery-Tags-Input)*/
 
@@ -427,12 +429,13 @@ $(document).ready(function () {
 			url: "modify.php",
 			data: $(this).serialize(),
 			type: "GET",
-			dataType: "text",
+			dataType: "json",
 			success: function(data) {
 				$(this).remove();
-				$("div#paper_experiment").append(data);	//Add the results to webpage
+				$("div#paper_experiment").append(data[1]);	//Add the results to webpage
 				
-				$("div#paper_mutation > button").attr("data-paper_experiment", "yes");
+				$("div#paper_mutation > button").attr("data-paper_experiment", "yes");	//Confirm that experiment has been added
+				$("#paper_mutation").attr("data-experiment_id", data[0]);	//Set the experiment id value for mutation forms to use
 			},
 			error: function(xhr, status, errorThrown) {
 				alert(errorThrown);

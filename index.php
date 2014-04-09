@@ -150,7 +150,7 @@
 		
 		
 		<div id="mutation_forms" style="display: none;">
-			<div id="current_pmid"></div>
+			<div id="current_pmid" style="display: none;"></div>
 			<div id="paper_experiment">
 				<h1>Paper Experiment</h1>
 				<form>

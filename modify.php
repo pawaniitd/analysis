@@ -221,7 +221,28 @@
 		
 		//Form - paper_experiment
 		if ($_GET['q'] == "paper_experiment") {
-			echo "<p>Hello</p>";
+			$pmid = $_GET['paper_experiment_pmid'];
+			$isolates = $_GET['paper_experiment_isolates'];
+			$experiment = $_GET['paper_experiment_experiment'];
+			
+			$sql = "INSERT INTO paper_experiment (pmid, isolates, experiment) VALUES (:pmid, :isolates, :expt)";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(':pmid', $pmid);
+			$q->bindParam(':isolates', $isolates);
+			$q->bindParam(':expt', $experiment);
+			$q->execute();
+			
+			$sql = "SELECT id FROM paper_experiment WHERE pmid=:pmid";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(':pmid', $pmid);
+			$q->execute();
+			$result = $q->fetch(PDO::FETCH_ASSOC);
+			$expt_id = $result['id'];
+			
+			$out_text = '<p><span class="bold">Isolates :</span> ' . $isolates . ' and <span class="bold">Experiment :</span> ' . $experiment . '</p>' . "\n";
+			
+			$arr = array($expt_id, $out_text);	//create array to encode in json
+			echo json_encode($arr);
 		}
 		
 		//Form - paper_region
