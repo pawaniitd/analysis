@@ -247,7 +247,40 @@
 		
 		//Form - paper_region
 		if ($_GET['q'] == "paper_region") {
-			echo "<p>Hello</p>";
+			$pmid = $_GET['paper_region_pmid'];
+			$city = $_GET['paper_region_city'];
+			$state = $_GET['paper_region_state'];
+			$country = $_GET['paper_region_country'];
+			$isolates = $_GET['paper_region_isolates'];
+			
+			empty($city) ? null : $city;
+			empty($state) ? null : $state;
+			empty($country) ? null : $country;
+			empty($isolates) ? null : $category;
+			
+			$sql = "INSERT INTO paper_region (pmid, city, state, country, isolates) VALUES (:p, :ci, :s, :co, :i)";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(':p', $pmid);
+			$q->bindParam(':ci', $city);
+			$q->bindParam(':s', $state);
+			$q->bindParam(':co', $country);
+			$q->bindParam(':i', $isolates);
+			$q->execute();
+			
+			$out_text = '<p>';
+			if (!is_null($city)) {
+				$out_text .= '<span class="bold">City :</span> ' . $city . ', ';
+			}
+			if (!is_null($state)) {
+				$out_text .= '<span class="bold">State :</span> ' . $state . ', ';
+			}
+			if (!is_null($country)) {
+				$out_text .= '<span class="bold">Country :</span> ' . $country . ', ';
+			}
+			$out_text .= '<span class="bold">Isolates :</span> ' . $isolates;
+			$out_text .= '</p>';
+			
+			echo $out_text;
 		}
 		
 		//Form - paper_drug-gene
