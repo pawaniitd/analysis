@@ -283,3 +283,27 @@ label {
 .chosen-container .chosen-results {
     max-height:100px !important;
 }
+
+
+/**************************************************************
+	Styles for the Mutations data collection forms
+**************************************************************/
+
+h1 {
+	font-weight: bold;
+	font-size: 2em;
+	margin: 20px 10px;
+}
+
+#mutation_forms label {
+	display: inline;
+}
+
+#mutation_forms input {
+	display: inline;
+}
+
+#mutation_forms button {
+	display: inline;
+}
+

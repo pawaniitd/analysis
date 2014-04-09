@@ -212,7 +212,27 @@
 			echo json_encode($array);
 		}
 		
-
+		
+	//*********************************************************************************************
+	//
+	//	Script for Mutations data collection forms
+	//
+	//*********************************************************************************************
+		
+		//Form - paper_experiment
+		if ($_GET['q'] == "paper_experiment") {
+			echo "<p>Hello</p>";
+		}
+		
+		//Form - paper_region
+		if ($_GET['q'] == "paper_region") {
+			echo "<p>Hello</p>";
+		}
+		
+		//Form - paper_drug-gene
+		if ($_GET['q'] == "paper_drug-gene") {
+			echo "<p>Hello drug-gene</p>";
+		}
 		
 	}
 ?>

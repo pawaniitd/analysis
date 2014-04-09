@@ -341,9 +341,10 @@ $(document).ready(function () {
 	});
 });	//end ready
  
-/*--------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-
+/* Tags -----------------------------------------------------------------------------------------------------------------------------------------------------
+Add tags input and load tags (JQuery UI autocomplete) - using jQuery-Tags-Input (https://github.com/xoxco/jQuery-Tags-Input)*/
 
 // Update the tags.json file on program load
 $(document).ready(function () {
@@ -362,24 +363,6 @@ $(document).ready(function () {
 	});	//end ajax
 	
 });	//end ready
-
-// Add tags input and load tags (JQuery UI autocomplete) - using jQuery-Tags-Input (https://github.com/xoxco/jQuery-Tags-Input)
-$(document).ready(function () {
-	$(".download a").click(function () {
-		$pmid = $(this).parent().parent().parent().attr('id');
-	
-	
-		$("div#" + $pmid + " .tags").show("fade");
-		
-		$("div#" + $pmid + " .tags .input_tags").tagsInput({
-			autocomplete_url:'files/tags.json',
-			height: '20px',
-			width: '70%'
-		});
-	
-	});	//end click
-});	//end ready
-
 
 //Add tags to the database - Submit form via JQuery and not HTML
 $(document).ready(function () {
@@ -401,3 +384,254 @@ $(document).ready(function () {
 		event.preventDefault();	//This prevents form submittion via html default
 	});	//end submit
 });	//end ready
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+$(document).ready(function () {
+	$(".download a").click(function () {
+		$pmid = $(this).parent().parent().parent().attr('id');
+	
+		//Tags
+		$("div#" + $pmid + " .tags").show("fade");
+		$("div#" + $pmid + " .tags .input_tags").tagsInput({
+			autocomplete_url:'files/tags.json',
+			height: '20px',
+			width: '70%'
+		});
+		
+		//Assign pmid to mutation forms
+		$("#current_pmid").html($pmid);
+		$("input.pmid").val($pmid);
+		
+		//Mutations forms
+		$("#mutation_forms").show("fade");
+	
+	});	//end click
+});	//end ready
+
+
+/**************************************************************
+
+	Script for the Mutations data collection forms
+	
+**************************************************************/
+
+/* Paper Experiment -----------------------------------------------------------------------------------------------------------------------------------------*/
+
+// Submit form
+$(document).ready(function () {
+	$("div#paper_experiment > form").submit(function (event) {
+		$.ajax({
+			context: $(this),
+			url: "modify.php",
+			data: $(this).serialize(),
+			type: "GET",
+			dataType: "text",
+			success: function(data) {
+				$(this).remove();
+				$("div#paper_experiment").append(data);	//Add the results to webpage
+				
+				$("div#paper_mutation > button").attr("data-paper_experiment", "yes");
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+	
+		event.preventDefault();	//This prevents form submittion via html default
+	});	//end submit
+});	//end ready
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/* Paper Region --------------------------------------------------------------------------------------------------------------------------------------------*/
+
+// Add new region button - to insert new form upon pressing the Add New button
+$(document).ready(function () {
+	$("div#paper_region > button").click(function () {
+		$.ajax({
+			url: "includes/form_paper_region.html",
+			type: "GET",
+			dataType: "html",
+			success: function(data) {
+				$("div#paper_region > div.forms").append(data);
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+	});	//end click
+});	//end ready
+
+// Delete form upon clicking the Cancel button 
+$(document).ready(function () {
+	$("div#paper_region > div.forms").on("click", ".cancel_button" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
+		$(this).parent().remove();
+	});	//end click
+});	//end ready
+
+// Submit the paper_region form
+$(document).ready(function () {
+	$("div#paper_region > div.forms").on("submit", "form" , function (event) {
+		$.ajax({
+			context: $(this),
+			url: "modify.php",
+			data: $(this).serialize(),
+			type: "GET",
+			dataType: "text",
+			success: function(data) {
+				$(this).html(data);
+				$("div#paper_mutation > button").attr("data-paper_region", "yes");
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+	
+		event.preventDefault();	//This prevents form submittion via html default
+	});	//end submit
+});	//end ready
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/* Paper Drug-Gene ------------------------------------------------------------------------------------------------------------------------------------------*/
+
+// Add new drug-gene button - to insert new form upon pressing the Add New button
+$(document).ready(function () {
+	$("div#paper_drug-gene > button").click(function () {
+		$.ajax({
+			url: "includes/form_paper_drug-gene.php",
+			type: "GET",
+			dataType: "html",
+			success: function(data) {
+				$("div#paper_drug-gene > div.forms").append(data);
+				
+				//Activate chosen
+				$("div#paper_drug-gene > div.forms select").chosen({	//Activate chosen on the select tag
+					disable_search_threshold: 5,
+					width: '200px'
+				});
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+	});	//end click
+});	//end ready
+
+// Delete form upon clicking the Cancel button 
+$(document).ready(function () {
+	$("div#paper_drug-gene > div.forms").on("click", ".cancel_button" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
+		$(this).parent().remove();
+	});	//end click
+});	//end ready
+
+// Submit the paper_region form
+$(document).ready(function () {
+	$("div#paper_drug-gene > div.forms").on("submit", "form" , function (event) {
+		$.ajax({
+			context: $(this),
+			url: "modify.php",
+			data: $(this).serialize(),
+			type: "GET",
+			dataType: "text",
+			success: function(data) {
+				$(this).html(data);
+				$("div#paper_mutation > button").attr("data-paper_drug-gene", "yes");
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+	
+		event.preventDefault();	//This prevents form submittion via html default
+	});	//end submit
+});	//end ready
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/* Paper Mutations ------------------------------------------------------------------------------------------------------------------------------------------*/
+
+// Add new button - to insert new mutation group upon pressing the Add New button
+$(document).ready(function () {
+	$("div#paper_mutation > button").click(function () {
+	
+		var expt = $("div#paper_mutation > button").attr("data-paper_experiment");
+		var reg = $("div#paper_mutation > button").attr("data-paper_region");
+		var dg = $("div#paper_mutation > button").attr("data-paper_drug-gene");
+		var id = $("#current_pmid").html();
+		var exptID = $("div#paper_mutation").attr("data-experiment_id");
+		
+		if (expt == "yes") {
+			if (dg == "yes") {
+				$.ajax({
+					url: "mutations.php",
+					type: "GET",
+					data: {
+						q: "paper_mutation_group",
+						pmid: id,
+						expt_id: exptID,
+						region: reg
+					},
+					dataType: "text",
+					success: function(data) {
+						var num = $("div#paper_mutation > div.forms div").length;
+						num += 1;
+						$("div#paper_mutation > div.forms").append('<div id="paper_mutation_group_' + num + '"></div>');
+						
+						$("#paper_mutation_group_" + num).append(data);
+						
+						$("#paper_mutation_group_" + num).append('<div></div>');
+						
+						$("#paper_mutation_group_" + num).append('<button type="button" class="add_mutation_button">Add Mutation</button>');
+					},
+					error: function(xhr, status, errorThrown) {
+						alert(errorThrown);
+					}
+				});	//end ajax
+			}
+			else {
+				alert("Please add drug-gene data first");
+			}
+		}
+		else {
+			alert("Please add experiment data first");
+		}
+	});	//end click
+});	//end ready
+
+// Add mutation button - to insert new mutation formupon pressing the button
+$(document).ready(function () {
+	$("div#paper_mutation > div.forms").on("click", ".add_mutation_button" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
+		var local = $(this).parent().attr('id');
+		
+		$.ajax({
+			url: "includes/form_paper_mutation.php",
+			context: $("#" + local + "> div"),
+			type: "GET",
+			dataType: "html",
+			success: function(data) {
+				$(this).append(data);
+				
+				//Activate chosen
+				$(this).find("select").chosen({	//Activate chosen on the select tag
+					disable_search_threshold: 5,
+					width: '200px'
+				});
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+	});	//end click
+});	//end ready
+
+// Delete form upon clicking the Cancel button 
+$(document).ready(function () {
+	$("div#paper_mutation > div.forms").on("click", ".cancel_button" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
+		$(this).parent().remove();
+	});	//end click
+});	//end ready
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
