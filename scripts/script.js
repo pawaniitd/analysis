@@ -123,7 +123,20 @@ $(document).ready(function () {
 		callback : function(pages, items) {
 			$("#count").html(pages.current + " of " + pages.count);
 			pageNo = pages.current;
-			$("#mutation_forms").hide("fade");
+			
+			$.ajax({
+				url: "includes/paper_mutation_reset.html",
+				type: "GET",
+				dataType: "html",
+				success: function(data) {
+					$("#mutation_forms").hide("fade");
+					$("#mutation_forms").html(data);
+				},
+				error: function(xhr, status, errorThrown) {
+					alert(errorThrown);
+				}
+			});	//end ajax
+			
 		}
 	});	//end jPages
 });	//end ready
@@ -402,13 +415,12 @@ $(document).ready(function () {
 			width: '70%'
 		});
 		
+		//Mutations forms
+		$("#mutation_forms").show("fade");
+		
 		//Assign pmid to mutation forms
 		$("#current_pmid").html($pmid);
 		$("input.pmid").val($pmid);
-		
-		//Mutations forms
-		$("#mutation_forms").show("fade");
-	
 	});	//end click
 });	//end ready
 
@@ -423,7 +435,7 @@ $(document).ready(function () {
 
 // Submit form
 $(document).ready(function () {
-	$("div#paper_experiment > form").submit(function (event) {
+	$(document).on("submit", "div#paper_experiment > form", function (event) {
 		$.ajax({
 			context: $(this),
 			url: "modify.php",
@@ -446,13 +458,16 @@ $(document).ready(function () {
 	});	//end submit
 });	//end ready
 
-/*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*===========================================================================================================================================================*/
 
-/* Paper Region --------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+	Paper Region 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 // Add new region button - to insert new form upon pressing the Add New button
 $(document).ready(function () {
-	$("div#paper_region > button").click(function () {
+	$(document).on("click", "div#paper_region > button", function () {
 		$.ajax({
 			url: "includes/form_paper_region.html",
 			type: "GET",
@@ -469,14 +484,14 @@ $(document).ready(function () {
 
 // Delete form upon clicking the Cancel button 
 $(document).ready(function () {
-	$("div#paper_region > div.forms").on("click", ".cancel_button" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
+	$(document).on("click", "div#paper_region > div.forms .cancel_button" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
 		$(this).parent().remove();
 	});	//end click
 });	//end ready
 
 // Submit the paper_region form
 $(document).ready(function () {
-	$("div#paper_region > div.forms").on("submit", "form" , function (event) {
+	$(document).on("submit", "div#paper_region > div.forms form" , function (event) {
 		$.ajax({
 			context: $(this),
 			url: "modify.php",
@@ -496,13 +511,13 @@ $(document).ready(function () {
 	});	//end submit
 });	//end ready
 
-/*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*===========================================================================================================================================================*/
 
 /* Paper Drug-Gene ------------------------------------------------------------------------------------------------------------------------------------------*/
 
 // Add new drug-gene button - to insert new form upon pressing the Add New button
 $(document).ready(function () {
-	$("div#paper_drug-gene > button").click(function () {
+	$(document).on("click", "div#paper_drug-gene > button", function () {
 		$.ajax({
 			url: "includes/form_paper_drug-gene.php",
 			type: "GET",
@@ -525,14 +540,14 @@ $(document).ready(function () {
 
 // Delete form upon clicking the Cancel button 
 $(document).ready(function () {
-	$("div#paper_drug-gene > div.forms").on("click", ".cancel_button" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
+	$(document).on("click", "div#paper_drug-gene > div.forms .cancel_button" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
 		$(this).parent().remove();
 	});	//end click
 });	//end ready
 
 // Submit the paper_region form
 $(document).ready(function () {
-	$("div#paper_drug-gene > div.forms").on("submit", "form" , function (event) {
+	$(document).on("submit", "div#paper_drug-gene > div.forms form" , function (event) {
 		$.ajax({
 			context: $(this),
 			url: "modify.php",
@@ -558,7 +573,7 @@ $(document).ready(function () {
 
 // Add new button - to insert new mutation group upon pressing the Add New button
 $(document).ready(function () {
-	$("div#paper_mutation > button").click(function () {
+	$(document).on("click", "div#paper_mutation > button", function () {
 	
 		var expt = $("div#paper_mutation > button").attr("data-paper_experiment");
 		var reg = $("div#paper_mutation > button").attr("data-paper_region");
@@ -606,7 +621,7 @@ $(document).ready(function () {
 
 // Add mutation button - to insert new mutation formupon pressing the button
 $(document).ready(function () {
-	$("div#paper_mutation > div.forms").on("click", ".add_mutation_button" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
+	$(document).on("click", "div#paper_mutation > div.forms .add_mutation_button" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
 		var local = $(this).parent().attr('id');
 		
 		$.ajax({
@@ -632,7 +647,7 @@ $(document).ready(function () {
 
 // Delete form upon clicking the Cancel button 
 $(document).ready(function () {
-	$("div#paper_mutation > div.forms").on("click", ".cancel_button" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
+	$(document).on("click", "div#paper_mutation > div.forms .cancel_button" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
 		$(this).parent().remove();
 	});	//end click
 });	//end ready

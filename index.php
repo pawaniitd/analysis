@@ -150,40 +150,6 @@
 		
 		
 		<div id="mutation_forms" style="display: none;">
-			<div id="current_pmid" style="display: none;"></div>
-			<div id="paper_experiment">
-				<h1>Paper Experiment</h1>
-				<form>
-					<input name="q" type="hidden" value="paper_experiment"/>
-					<input class="pmid" name="paper_experiment_pmid" type="hidden" value=""/>
-					<label for="paper_experiment_isolates">Isolates</label>
-					<input id="paper_experiment_isolates" name="paper_experiment_isolates" type="number" />
-					<label for="paper_experiment_experiment">Experiment</label>
-					<input id="paper_experiment_experiment" name="paper_experiment_experiment" type="text" />
-					<button type="submit">Add Experiment</button>
-				</form>
-			</div>
-			
-			<div id="paper_region">
-				<h1>Paper Region</h1>
-				<div class="forms">
-				</div>
-				<button>Add New</button>
-			</div>
-			
-			<div id="paper_drug-gene">
-				<h1>Paper Drug-Gene</h1>
-				<div class="forms">
-				</div>
-				<button>Add New</button>
-			</div>
-			
-			<div id="paper_mutation" data-experiment_id="">
-				<h1>Paper Mutations</h1>
-				<div class="forms">
-				</div>
-				<button data-paper_experiment="no" data-paper_drug-gene="no" data-paper_region="no">Add New</button>
-			</div>
 		</div>
 		
 	</div>
