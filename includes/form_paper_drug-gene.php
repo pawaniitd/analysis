@@ -1,7 +1,7 @@
 <form>
 	<input name="q" type="hidden" value="paper_drug-gene"/>
 	<input class="pmid" name="paper_drug-gene_pmid" type="hidden" value=""/>
-	<select id="select_paper_drug-gene" name="paper_drug-gene_id" data-placeholder="Choose a Drug-Gene...">
+	<select id="select_paper_drug-gene" name="paper_drug-gene_id" data-placeholder="Choose a Drug-Gene..." required>
 		<?php
 			$filename = '../files/drug-gene_options.html';
 			if (file_exists($filename)) {
@@ -31,7 +31,7 @@
 		?>
 	</select>
 	<label for="paper_drug-gene_isolates">Isolates</label>
-	<input id="paper_drug-gene_isolates" name="paper_drug-gene_isolates" type="number" />
+	<input id="paper_drug-gene_isolates" name="paper_drug-gene_isolates" type="number" required/>
 	<button type="submit">Submit</button>
 	<button type="button" class="cancel_button">Cancel</button>
 </form>

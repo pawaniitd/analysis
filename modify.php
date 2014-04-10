@@ -285,7 +285,25 @@
 		
 		//Form - paper_drug-gene
 		if ($_GET['q'] == "paper_drug-gene") {
-			echo "<p>Hello drug-gene</p>";
+			$pmid = $_GET['paper_drug-gene_pmid'];
+			$drug_gene_id = $_GET['paper_drug-gene_id'];
+			$isolates = $_GET['paper_drug-gene_isolates'];
+			
+			try {
+			$sql = "INSERT INTO paper_drug_gene (pmid, drug_gene_id, isolates) VALUES (:p, :dg, :i)";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(':p', $pmid);
+			$q->bindParam(':dg', $drug_gene_id);
+			$q->bindParam(':i', $isolates);
+			$q->execute();
+			}
+			catch (PDOException $e) {
+				//Do your error handling here
+				echo $e->getMessage();
+			}
+			
+			$out_text = '<p><span class="bold">Id :</span> ' . $drug_gene_id . ' and <span class="bold">Isolates :</span> ' . $isolates . '</p>';
+			echo $out_text;
 		}
 		
 	}
