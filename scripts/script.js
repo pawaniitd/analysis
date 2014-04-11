@@ -575,7 +575,9 @@ $(document).ready(function () {
 
 /*===========================================================================================================================================================*/
 
-/* Paper Mutations ------------------------------------------------------------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------------
+	Paper Mutations 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 // Add new button - to insert new mutation group upon pressing the Add New button
 $(document).ready(function () {
@@ -587,24 +589,29 @@ $(document).ready(function () {
 		var id = $("#current_pmid").html();
 		var exptID = $("div#paper_mutation").attr("data-experiment_id");
 		
-		if (expt == "yes") {
-			if (dg == "yes") {
+	//	if (expt == "yes") {
+	//		if (dg == "yes") {
 				$.ajax({
-					url: "mutations.php",
+					url: "includes/form_paper_mutation_group.php",
 					type: "GET",
 					data: {
-						q: "paper_mutation_group",
 						pmid: id,
 						expt_id: exptID,
 						region: reg
 					},
-					dataType: "text",
+					dataType: "html",
 					success: function(data) {
 						var num = $("div#paper_mutation > div.forms div").length;
 						num += 1;
 						$("div#paper_mutation > div.forms").append('<div id="paper_mutation_group_' + num + '"></div>');
 						
 						$("#paper_mutation_group_" + num).append(data);
+						//Activate chosen
+						$(".form_paper_mutation_group select").chosen({	//Activate chosen on the select tag
+							disable_search_threshold: 5,
+							width: '200px'
+						});
+						
 						
 						$("#paper_mutation_group_" + num).append('<div></div>');
 						
@@ -614,7 +621,7 @@ $(document).ready(function () {
 						alert(errorThrown);
 					}
 				});	//end ajax
-			}
+	/*		}
 			else {
 				alert("Please add drug-gene data first");
 			}
@@ -622,6 +629,7 @@ $(document).ready(function () {
 		else {
 			alert("Please add experiment data first");
 		}
+	*/
 	});	//end click
 });	//end ready
 
@@ -630,24 +638,57 @@ $(document).ready(function () {
 	$(document).on("click", "div#paper_mutation > div.forms .add_mutation_button" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
 		var local = $(this).parent().attr('id');
 		
-		$.ajax({
-			url: "includes/form_paper_mutation.php",
-			context: $("#" + local + "> div"),
-			type: "GET",
-			dataType: "html",
-			success: function(data) {
-				$(this).append(data);
-				
-				//Activate chosen
-				$(this).find("select").chosen({	//Activate chosen on the select tag
-					disable_search_threshold: 5,
-					width: '200px'
-				});
-			},
-			error: function(xhr, status, errorThrown) {
-				alert(errorThrown);
+		var array = $("#" + local + "> form").serializeArray();
+		console.log(array);
+		var expt_id = array[0].value;
+		var dg_id = array[1].value;
+		var region_id = "";
+		
+		var check = false;
+		
+		if (dg_id) {
+			if (array.length == 3) {	//If paper_region is added
+				region_id = array[2].value;
+				if (region_id) {
+					check = true;
+				}
+				else {
+					alert ("Select region");
+				}
 			}
-		});	//end ajax
+			else {	//paper_region does not exist
+				check = true;
+			}
+		}
+		else {
+			alert ("Select drug-gene");
+		}
+		
+		if (check) {
+			$.ajax({
+				url: "includes/form_paper_mutation.php",
+				context: $("#" + local + "> div"),
+				data: {
+					expt_id: expt_id,
+					dg_id: dg_id,
+					region_id: region_id
+				},
+				type: "GET",
+				dataType: "html",
+				success: function(data) {
+					$(this).append(data);
+					
+					//Activate chosen
+					$(this).find("select").chosen({	//Activate chosen on the select tag
+						disable_search_threshold: 5,
+						width: '200px'
+					});
+				},
+				error: function(xhr, status, errorThrown) {
+					alert(errorThrown);
+				}
+			});	//end ajax
+		}
 	});	//end click
 });	//end ready
 

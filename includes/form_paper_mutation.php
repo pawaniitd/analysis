@@ -5,23 +5,24 @@
 
 	$conn = connectDB();
 	//$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	
+	$expt_id = $_GET['expt_id'];
+	$dg_id = $_GET['dg_id'];
+	$region_id = $_GET['region_id'];
 ?>
 
 <form>
 	<input name="q" type="hidden" value="paper_mutation"/>
-	<input name="paper_experiment_id" type="hidden" value=""/>
-	<input name="paper_drug-gene_id" type="hidden" value=""/>
-	<?php
-		if (isset($_GET['region'])) {
-			if ($_GET['region'] == "yes") {
-				echo '<input name="paper_region_id" type="hidden" value=""/>';
-			}
-		}
-	?>
+	<input name="paper_experiment_id" type="hidden" value="<?php echo $expt_id ?>"/>
+	<input name="paper_drug-gene_id" type="hidden" value="<?php echo $dg_id ?>"/>
+	<input name="paper_region_id" type="hidden" value="<?php echo $region_id ?>"/>
+	
 	<label for="paper_mutation_isolates">Isolates</label>
 	<input id="paper_mutation_isolates" name="paper_mutation_isolates" type="number" />
 	<label for="paper_mutation_percent-isolates">Percent Isolates</label>
 	<input id="paper_mutation_percent-isolates" name="paper_mutation_percent-isolates" type="number" />
+	<label for="paper_mutation_mic">MIC</label>
+	<input id="paper_mutation_mic" name="paper_mutation_mic" type="number" />
 	<fieldset>
 		<legend>Amino Acid</legend>
 		<label for="paper_mutation_aa-location">Location</label>
