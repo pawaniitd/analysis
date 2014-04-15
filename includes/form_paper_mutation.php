@@ -11,23 +11,27 @@
 	$region_id = $_GET['region_id'];
 ?>
 
-<form>
+<form class="indent block_input">
 	<input name="q" type="hidden" value="paper_mutation"/>
 	<input name="paper_experiment_id" type="hidden" value="<?php echo $expt_id ?>"/>
 	<input name="paper_drug-gene_id" type="hidden" value="<?php echo $dg_id ?>"/>
 	<input name="paper_region_id" type="hidden" value="<?php echo $region_id ?>"/>
 	
-	<label for="paper_mutation_isolates">Isolates</label>
-	<input id="paper_mutation_isolates" name="paper_mutation_isolates" type="number" />
-	<label for="paper_mutation_percent-isolates">Percent Isolates</label>
-	<input id="paper_mutation_percent-isolates" name="paper_mutation_percent-isolates" type="number" />
-	<label for="paper_mutation_mic">MIC</label>
-	<input id="paper_mutation_mic" name="paper_mutation_mic" type="number" />
+	<fieldset>
+		<legend>Isolates</legend>
+		
+		<label for="paper_mutation_isolates">Isolates</label>
+		<input class="paper_mutation_isolates" name="paper_mutation_isolates" type="number" />
+		<label for="paper_mutation_percent-isolates">Percent Isolates</label>
+		<input class="paper_mutation_percent-isolates" name="paper_mutation_percent-isolates" type="number" />
+		<label for="paper_mutation_mic">MIC</label>
+		<input class="paper_mutation_mic" name="paper_mutation_mic" type="number" />
+	</fieldset>
 	<fieldset>
 		<legend>Amino Acid</legend>
 		<label for="paper_mutation_aa-location">Location</label>
-		<input id="paper_mutation_percent-aa-location" name="paper_mutation_percent-aa-location" type="number" />
-		<select id="paper_mutation_aa-original" name="paper_mutation_aa-original" data-placeholder="Original Amino Acid...">
+		<input class="paper_mutation_aa-location" name="paper_mutation_aa-location" type="number" />
+		<select class="paper_mutation_aa-original" name="paper_mutation_aa-original" data-placeholder="Original Amino Acid...">
 			<option value=""></option>
 			<?php
 				$sql = "SELECT * FROM amino_acids";
@@ -36,11 +40,11 @@
 				
 				$result = $q->fetchAll(PDO::FETCH_ASSOC);
 				foreach ($result as $x) {
-					echo '<option value="' . $x['id'] . '">' . trim($x['name']) . ' (' . trim($x['three_letter']) . ')</option>' . "\n";
+					echo '<option value="' . $x['id'] . '">' . trim($x['name']) . ' (' . trim($x['three_letter']) . ') [' . $x['id'] . ']</option>' . "\n";
 				}
 			?>
 		</select>
-		<select id="paper_mutation_aa-substituted" name="paper_mutation_aa-substituted" data-placeholder="Substituted Amino Acid...">
+		<select class="paper_mutation_aa-substituted" name="paper_mutation_aa-substituted" data-placeholder="Substituted Amino Acid...">
 			<option value=""></option>
 			<?php
 				$sql = "SELECT * FROM amino_acids";
@@ -49,23 +53,33 @@
 				
 				$result = $q->fetchAll(PDO::FETCH_ASSOC);
 				foreach ($result as $x) {
-					echo '<option value="' . $x['id'] . '">' . trim($x['name']) . ' (' . trim($x['three_letter']) . ')</option>' . "\n";
+					echo '<option value="' . $x['id'] . '">' . trim($x['name']) . ' (' . trim($x['three_letter']) . ') [' . $x['id'] . ']</option>' . "\n";
 				}
 			?>
 		</select>
 		<label for="paper_mutation_codon-original">Codon - Original</label>
-		<input id="paper_mutation_codon-original" name="paper_mutation_codon-original" type="text" />
+		<input class="paper_mutation_codon-original" name="paper_mutation_codon-original" type="text" />
 		<label for="paper_mutation_codon-substituted">Codon - Substituted</label>
-		<input id="paper_mutation_codon-substituted" name="paper_mutation_codon-substituted" type="text" />
+		<input class="paper_mutation_codon-substituted" name="paper_mutation_codon-substituted" type="text" />
 	</fieldset>
 	<fieldset>
 		<legend>DNA - Nucleotide</legend>
 		<label for="paper_mutation_nucleotide-location">Location</label>
-		<input id="paper_mutation_nucleotide-location" name="paper_mutation_nucleotide-location" type="number" />
-		<label for="paper_mutation_nucleotide-original">Original</label>
-		<input id="paper_mutation_nucleotide-original" name="paper_mutation_nucleotide-original" type="text" />
-		<label for="paper_mutation_nucleotide-substituted">Substituted</label>
-		<input id="paper_mutation_nucleotide-substituted" name="paper_mutation_nucleotide-substituted" type="text" />
+		<input class="paper_mutation_nucleotide-location" name="paper_mutation_nucleotide-location" type="number" />
+		<select class="paper_mutation_nucleotide-original" name="paper_mutation_nucleotide-original" data-placeholder="Original Nucleotide...">
+			<option value=""></option>
+			<option value="A">A</option>
+			<option value="C">C</option>
+			<option value="G">G</option>
+			<option value="T">T</option>
+		</select>
+		<select class="paper_mutation_nucleotide-substituted" name="paper_mutation_nucleotide-substituted" data-placeholder="Substituted Nucleotide...">
+			<option value=""></option>
+			<option value="A">A</option>
+			<option value="C">C</option>
+			<option value="G">G</option>
+			<option value="T">T</option>
+		</select>
 	</fieldset>
 	<button type="submit">Submit</button>
 	<button type="button" class="cancel_button">Cancel</button>

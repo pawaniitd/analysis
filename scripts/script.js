@@ -589,8 +589,8 @@ $(document).ready(function () {
 		var id = $("#current_pmid").html();
 		var exptID = $("div#paper_mutation").attr("data-experiment_id");
 		
-	//	if (expt == "yes") {
-	//		if (dg == "yes") {
+		if (expt == "yes") {
+			if (dg == "yes") {
 				$.ajax({
 					url: "includes/form_paper_mutation_group.php",
 					type: "GET",
@@ -603,7 +603,7 @@ $(document).ready(function () {
 					success: function(data) {
 						var num = $("div#paper_mutation > div.forms div").length;
 						num += 1;
-						$("div#paper_mutation > div.forms").append('<div id="paper_mutation_group_' + num + '"></div>');
+						$("div#paper_mutation > div.forms").append('<div class="paper_mutation_group indent" id="paper_mutation_group_' + num + '"><h2>Mutation Group</h2></div>');
 						
 						$("#paper_mutation_group_" + num).append(data);
 						//Activate chosen
@@ -615,13 +615,13 @@ $(document).ready(function () {
 						
 						$("#paper_mutation_group_" + num).append('<div></div>');
 						
-						$("#paper_mutation_group_" + num).append('<button type="button" class="add_mutation_button">Add Mutation</button>');
+						$("#paper_mutation_group_" + num).append('<button type="button" class="add_mutation_button add_new">Add Mutation</button>');
 					},
 					error: function(xhr, status, errorThrown) {
 						alert(errorThrown);
 					}
 				});	//end ajax
-	/*		}
+			}
 			else {
 				alert("Please add drug-gene data first");
 			}
@@ -629,7 +629,6 @@ $(document).ready(function () {
 		else {
 			alert("Please add experiment data first");
 		}
-	*/
 	});	//end click
 });	//end ready
 
@@ -639,12 +638,11 @@ $(document).ready(function () {
 		var local = $(this).parent().attr('id');
 		
 		var array = $("#" + local + "> form").serializeArray();
-		console.log(array);
 		var expt_id = array[0].value;
 		var dg_id = array[1].value;
 		var region_id = "";
 		
-		var check = false;
+		var check = true;
 		
 		if (dg_id) {
 			if (array.length == 3) {	//If paper_region is added
@@ -662,6 +660,7 @@ $(document).ready(function () {
 		}
 		else {
 			alert ("Select drug-gene");
+			check = false;
 		}
 		
 		if (check) {
@@ -681,7 +680,8 @@ $(document).ready(function () {
 					//Activate chosen
 					$(this).find("select").chosen({	//Activate chosen on the select tag
 						disable_search_threshold: 5,
-						width: '200px'
+						width: '200px',
+						inherit_select_classes: true
 					});
 				},
 				error: function(xhr, status, errorThrown) {
@@ -699,4 +699,150 @@ $(document).ready(function () {
 	});	//end click
 });	//end ready
 
-/*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*===========================================================================================================================================================*/
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------------
+	Mutation final form
+-------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+// Check if the amino acid (original) selected actually exists at that location
+$(document).ready(function () {
+	var check = true;	//this check is to make sure that the alert is triggerred only upon manually changing option (not automatically)
+
+	$(document).on("change", "select.paper_mutation_aa-original" , function () {
+		var location = $(this).siblings("input.paper_mutation_aa-location").val();
+		
+		if (location) {	//check if location is set
+			//main
+			var aa = $(this).val();
+			var pdg_id = $(this).siblings("input.paper_drug-gene_id").val();
+			
+			$.ajax({
+				url: "modify.php",
+				context: $(this),
+				data: {
+					q: "mutation_check_aa",
+					location: location,
+					pdg_id: 2,
+					amino_acid: aa
+				},
+				type: "GET",
+				dataType: "text",
+				success: function(data) {
+					if (data == "yes") {
+						var txt = $(this).children("option:selected").text();
+						$(this).siblings("div.paper_mutation_aa-original").empty();
+						var out = '<span class="bold">Original: </span><span>' + txt + ' </span><img src="images/tick1.png" alt="Left" height="8" width="10">'
+						$(this).siblings("div.paper_mutation_aa-original").html(out);
+					}
+					else {
+						alert("Amino Acid in that location did not match!");
+					}
+				},
+				error: function(xhr, status, errorThrown) {
+					alert(errorThrown);
+				}
+			});	//end ajax
+		}
+		else {	//do this if location is not set
+			if (check) {
+				alert("Please enter the 'Amino Acid Location' first");
+			}
+			check = false;
+			$('select.paper_mutation_aa-original').val('').trigger('chosen:updated');
+		}
+		check = true;
+	});	//end click
+});	//end ready
+
+
+//Check if codon entered is correct codon for the amino acid entered
+function check_codon (obj, select_class, type) {
+	var aa = obj.siblings("select." + select_class).val();
+	
+	if (aa) {	//If amino acid is selected
+		var codon = obj.val();
+		$.ajax({
+			url: "modify.php",
+			context: obj,
+			data: {
+				q: "codon",
+				codon: codon
+			},
+			type: "GET",
+			dataType: "text",
+			success: function(data) {
+				if (aa == data) {
+					obj.prop('readonly', true);
+					obj.css({
+						"background-image": "url('images/tick1.png')",
+						"background-repeat": "no-repeat",
+						"background-position": "left center",
+						"padding-left": "11px"
+					});
+				}
+				else {
+					obj.val('');
+					alert("Incorrect " + type + " Codon");
+				}
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});
+	}
+	else {
+		alert("Select " + type + " amino acid!");
+		obj.val('');
+	}
+}
+$(document).ready(function () {
+	$(document).on("change", "input.paper_mutation_codon-original" , function () {
+		check_codon($(this), 'paper_mutation_aa-original', 'Original');
+	});	//end click
+	
+	$(document).on("change", "input.paper_mutation_codon-substituted" , function () {
+		check_codon($(this), 'paper_mutation_aa-substituted', 'Substituted');
+	});	//end click
+});	//end ready
+
+
+// Submit the mutation form
+$(document).ready(function () {
+	$(document).on("submit", "div.paper_mutation_group form" , function (event) {
+		$.ajax({
+			context: $(this),
+			url: "modify.php",
+			data: $(this).serialize(),
+			type: "GET",
+			dataType: "json",
+			success: function(data) {
+				if (data[0] == true) {
+					var ori_aa = $(this).find('select.paper_mutation_aa-original option[value="' + data[8] + '"]').text();
+					var sub_aa = $(this).find('select.paper_mutation_aa-original option[value="' + data[9] + '"]').text();
+					
+					var txt = "<div class=\"mut_data\">\n<h3>Isolates</h3>\n";
+					txt += "<p>No. = " + data[4] + ", Percent = " + data[5] + ", MIC = " + data[6] + "</p>\n";
+					txt += "<h3>Amino Acid</h3>\n";
+					txt += "<p>Location = " + data[7] + ", Original = " + ori_aa + ", Substituted = " + sub_aa + "</p>\n";
+					txt += "<h3>Codon</h3>\n";
+					txt += "<p>Original = " + data[10] + ", Substituted = " + data[11] + "</p>\n";
+					txt += "<h3>Nucleotide</h3>\n";
+					txt += "<p>Location = " + data[12] + ", Original = " + data[13] + ", Substituted = " + data[14] + "</p>\n</div>\n";
+					
+					$(this).replaceWith(txt);
+					
+				}
+				else {
+					alert (data[1]);
+				}
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+	
+		event.preventDefault();	//This prevents form submittion via html default
+	});	//end submit
+});	//end ready
+/*===========================================================================================================================================================*/

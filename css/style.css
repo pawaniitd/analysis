@@ -289,10 +289,27 @@ label {
 	Styles for the Mutations data collection forms
 **************************************************************/
 
-h1 {
+#mutation_forms {
+	margin: 50px;
+}
+
+#mutation_forms  form{
+	padding: 5px 20px;
+}
+
+#mutation_forms h1 {
 	font-weight: bold;
 	font-size: 2em;
-	margin: 20px 10px;
+	margin: 20px 0px;
+}
+
+#mutation_forms h2 {
+	color: #555555;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    margin-left: 10px;
+    margin-top: 0;
 }
 
 #mutation_forms label {
@@ -301,9 +318,143 @@ h1 {
 
 #mutation_forms input {
 	display: inline;
+	margin: 0 5px;
+    padding: 1px;
+	margin-right: 20px;
 }
 
 #mutation_forms button {
 	display: inline;
+    font-size: 1.2em;
+    padding: 1px;
+	margin-left: 5px;
 }
+
+#mutation_forms fieldset{
+	border-color: #999999;
+    border-style: dashed;
+    border-width: 1px;
+    display: inline-block;
+    margin-right: 20px;
+    padding: 10px;
+    vertical-align: top;
+	width: 220px;
+}
+
+#mutation_forms legend{
+	font-size: 1.5em;
+    font-weight: bold;
+    padding: 0 3px;
+}
+
+#mutation_forms form.block_input input{
+	display: block;
+	margin: 0;
+	width: 40px;
+}
+
+#mutation_forms form.block_input {
+	background-color: #F5F5F5;
+    border-color: #CCCCCC;
+    border-style: solid;
+    border-width: 1px;
+    display: flex;
+}
+
+#mutation_forms form.block_input label{
+	display: block;
+    font-family: 'Vollkorn',serif;
+    font-size: 1.4em;
+    font-weight: normal;
+}
+
+#mutation_forms form.block_input div.chosen-container{
+	display: block;
+	margin: 10px 0px;
+}
+
+#mutation_forms .indent {
+	margin: 10px 30px;
+}
+
+#mutation_forms div.chosen-container {
+	margin-right: 20px;
+}
+
+#mutation_forms  button.add_new {
+	padding: 5px 10px;
+	margin-top: 20px;
+	-moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	box-shadow:inset 0px 1px 0px 0px #ffffff;
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #f6f6f6));
+	background:-moz-linear-gradient(top, #ffffff 5%, #f6f6f6 100%);
+	background:-webkit-linear-gradient(top, #ffffff 5%, #f6f6f6 100%);
+	background:-o-linear-gradient(top, #ffffff 5%, #f6f6f6 100%);
+	background:-ms-linear-gradient(top, #ffffff 5%, #f6f6f6 100%);
+	background:linear-gradient(to bottom, #ffffff 5%, #f6f6f6 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f6f6f6',GradientType=0);
+	background-color:#ffffff;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+	border:1px solid #dcdcdc;
+	display:inline-block;
+	cursor:pointer;
+	color:#666666;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #ffffff;
+}
+#mutation_forms  button.add_new:hover {
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f6f6f6), color-stop(1, #ffffff));
+	background:-moz-linear-gradient(top, #f6f6f6 5%, #ffffff 100%);
+	background:-webkit-linear-gradient(top, #f6f6f6 5%, #ffffff 100%);
+	background:-o-linear-gradient(top, #f6f6f6 5%, #ffffff 100%);
+	background:-ms-linear-gradient(top, #f6f6f6 5%, #ffffff 100%);
+	background:linear-gradient(to bottom, #f6f6f6 5%, #ffffff 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f6f6f6', endColorstr='#ffffff',GradientType=0);
+	background-color:#f6f6f6;
+}
+#mutation_forms  button.add_new:active {
+	position:relative;
+	top:1px;
+}
+
+#mutation_forms div.paper_mutation_group {
+	background-color: #F9F9F9;
+    border-color: #EEEEEE;
+    border-style: solid;
+    border-width: 1px;
+    padding: 10px 0;
+}
+
+#mutation_forms div.mut_data {
+	margin: 10px 30px;
+	background-color: #F5F5F5;
+    border-color: #CCCCCC;
+    border-style: solid;
+    border-width: 1px;
+}
+
+#mutation_forms div.mut_data  h3{
+	font-size: 1.2em;
+	font-weight: bold;
+	margin-top: 5px;
+}
+
+#mutation_forms div.mut_data  p{
+	font-family: 'Vollkorn',serif;
+    font-size: 1.2em;
+    margin: 3px;
+}
+
+input[type="number"] {
+	width: 40px; !important
+}
+
+.bold {
+	font-weight: bold;
+}
+
+
 

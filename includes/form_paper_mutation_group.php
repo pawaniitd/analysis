@@ -14,7 +14,7 @@
 
 <form class="form_paper_mutation_group">
 	<input type="hidden" name="paper_experiment_id" value="<?php echo $_GET['expt_id']?>" />
-	<select id="select_paper_drug-gene_id" name="paper_drug-gene_id" data-placeholder="Choose a Drug-Gene... " required>
+	<select class="select_paper_drug-gene_id" name="paper_drug-gene_id" data-placeholder="Choose a Drug-Gene... " required>
 		<option value=""></option>
 		<?php
 			try {
@@ -36,7 +36,7 @@
 	</select>
 	<?php
 		if ($bool_region == "yes") {
-			echo '<select id="select_paper_region_id" name="paper_region_id" data-placeholder="Choose a Region..." required>' . "\n";
+			echo '<select class="select_paper_region_id" name="paper_region_id" data-placeholder="Choose a Region..." required>' . "\n";
 			echo '<option value=""></option>' . "\n";
 			
 			try {

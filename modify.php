@@ -1,6 +1,6 @@
 <?php
 	
-	error_reporting(0);
+	//error_reporting(0);
 
 	$file_pageNo = "files/pageNo.txt";
 	$file_tags = "files/tags.json";
@@ -9,10 +9,26 @@
 	include 'includes/connectDB.inc';
 				
 	$conn = connectDB();
-	//$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	
+	
+	
+	//////FUNCTION////////////////
+	//to get amino acid from codon
+	function codonTOaa ($conn, $codon){
+		$sql = "SELECT amino_acid_id FROM codons WHERE seq=:codon";
+		$q = $conn -> prepare($sql);
+		$q->bindParam(':codon', $codon);
+		$q->execute();
+		
+		$result = $q->fetch(PDO::FETCH_ASSOC);
+		
+		return $result['amino_acid_id'];
+	}
+	///////////////////////////////		
 
-				
-				
+
+
 	if (isset($_GET['q'])) {
 	
 		//This loads the page no. to load at the start of application, based on the page last seen
@@ -306,5 +322,266 @@
 			echo $out_text;
 		}
 		
+		
+		//Check if Amino Acid is present at given location
+		if ($_GET['q'] == "mutation_check_aa") {
+			$location = $_GET['location'];
+			$pdg_id = $_GET['pdg_id'];
+			$amino_acid = $_GET['amino_acid'];
+			
+			try {
+				$sql = "SELECT protein_seq FROM h37rv_genes WHERE name IN (SELECT gene_name FROM view_paper_drug_gene WHERE id=:id)";
+				$q = $conn -> prepare($sql);
+				$q->bindParam(':id', $pdg_id);
+				$q->execute();
+				
+				$result = $q->fetch(PDO::FETCH_ASSOC);
+				
+				$seq = $result['protein_seq'];
+				
+				$aa = substr($seq, ($location-1), 1);
+				
+				if ($amino_acid == $aa) {
+					echo "yes";
+				}
+				else {
+					echo "no";
+				}
+			}
+			catch (PDOException $e) {
+				//Do your error handling here
+				echo $e->getMessage();
+			}
+		}
+		
+		
+		//Get amino acid from codon
+		if ($_GET['q'] == "codon") {
+			$codon = $_GET['codon'];
+			echo codonTOaa ($conn, $codon);
+		}
+		
+		
+		//Individual mutation form processing 
+		if ($_GET['q'] == "paper_mutation") {
+		
+			$check = true;
+			$error = "";
+			
+			$expt_id = $_GET['paper_experiment_id'];	//Required
+			$pdg_id = $_GET['paper_drug-gene_id'];	//Required
+			$region_id = $_GET['paper_region_id'];
+			
+			$isolates = $_GET['paper_mutation_isolates'];
+			$per_isolates = $_GET['paper_mutation_percent-isolates'];
+			$mic = $_GET['paper_mutation_mic'];
+			
+			$aa_location = $_GET['paper_mutation_aa-location'];	
+			$aa_original = $_GET['paper_mutation_aa-original'];
+			$aa_substituted = $_GET['paper_mutation_aa-substituted'];
+			
+			$codon_original = $_GET['paper_mutation_codon-original'];
+			$codon_substituted= $_GET['paper_mutation_codon-substituted'];
+			
+			$dna_location = $_GET['paper_mutation_nucleotide-location'];
+			$dna_original = $_GET['paper_mutation_nucleotide-original'];
+			$dna_substituted = $_GET['paper_mutation_nucleotide-substituted'];
+			
+			if (empty($expt_id)) {
+				die("Experiment ID not filled");
+			}
+			
+			if (empty($pdg_id)) {
+				die("Paper Drug-Gene ID not filled");
+			}
+			
+			//From valitation
+			if (!empty($per_isolates) || !empty($isolates)) {
+			
+				//check isolates and percent isolates
+				$sql = "SELECT isolates FROM paper_drug_gene WHERE id=:pdg";
+				$q = $conn -> prepare($sql);
+				$q->bindParam(':pdg', $pdg_id);
+				$q->execute();
+				$result = $q->fetch(PDO::FETCH_ASSOC);
+				
+				$tot_isolates = $result['isolates'];
+				if (empty($isolates) && !empty($per_isolates)) {
+					$isolates = round(($per_isolates*$tot_isolates)/100);	//VALUE
+				}
+				if (!empty($isolates) && empty($per_isolates)) {
+					$per_isolates = round(($isolates*100)/$tot_isolates);	//VALUE
+				}
+				
+				//amino acid deatials are entered
+				if (!empty($aa_location) && empty($dna_location)) {
+				
+					//if original codon is not entered
+					if (empty($codon_original)) {
+						
+						$dna_location = 3*($aa_location - 1);
+	
+						$sql = "SELECT seq FROM h37rv_genes WHERE name IN (SELECT gene_name FROM view_paper_drug_gene WHERE id=:id)";
+						$q = $conn -> prepare($sql);
+						$q->bindParam(':id', $pdg_id);
+						$q->execute();
+						
+						$result = $q->fetch(PDO::FETCH_ASSOC);
+						
+						$seq = $result['seq'];
+						
+						$codon = substr($seq, $dna_location, 3);
+						
+						if ($aa_original == (codonTOaa ($conn, $codon))) {
+							$codon_original = $codon;	//VALUE
+						}
+						else {
+							$check = false;
+							$error = "Incorrect codon for Original Amino Acid";
+						}
+						
+					}
+					
+					//if substituted codon is not entered
+					//	--> It will get the list of all codons for the amino acids and compare them to the original codon and look for single mutations
+					if (empty($codon_substituted)) {
+						$sql = "SELECT seq FROM codons WHERE amino_acid_id=:id";
+						$q = $conn -> prepare($sql);
+						$q->bindParam(':id', $aa_substituted);
+						$q->execute();
+		
+						$result = $q->fetchAll(PDO::FETCH_ASSOC);
+						
+						foreach ($result as $x) {
+							$y = $x['seq'];
+							$count = 0;
+							for($i=0;$i<strlen($codon_original);$i++) { 
+								if ($codon_original[$i] == $y[$i]) {
+									$count += 1;
+								}
+							}
+							if ($count == 2) {
+								$codon_substituted = $y;	//VALUE
+								break;
+							}
+						}
+					}
+					
+					//Nucleotide
+					for($i=0;$i<strlen($codon_original);$i++) {
+						if ($codon_original[$i] != $codon_substituted[$i]) {
+							$dna_location = ((($aa_location - 1)*3) + 1) + $i;	//VALUE
+							$dna_original = $codon_original[$i];	//VALUE
+							$dna_substituted = $codon_substituted[$i];	//VALUE
+						}
+					}
+				}
+				
+				// Only Nucleotide details are entered
+				elseif (empty($aa_location) && !empty($dna_location)) {
+				
+					$within_codon = $dna_location % 3;
+					if ($within_codon == 0) {
+						$within_codon = 3;
+					}
+					$aa_loc = (($dna_location - $within_codon)/3) + 1;
+					$codon_loc = ($dna_location - $within_codon) + 1;
+					
+					$sql = "SELECT seq, protein_seq FROM h37rv_genes WHERE name IN (SELECT gene_name FROM view_paper_drug_gene WHERE id=:id)";
+					$q = $conn -> prepare($sql);
+					$q->bindParam(':id', $pdg_id);
+					$q->execute();
+					
+					$result = $q->fetch(PDO::FETCH_ASSOC);
+		
+					$seq = $result['seq'];
+					$protein_seq = $result['protein_seq'];
+					
+					if (empty($dna_original)) {
+						$dna_original = $seq[($dna_location - 1)];
+					}
+					
+					 
+					
+					$codon = substr($seq, ($codon_loc - 1), 3);
+					$aa = $protein_seq[($aa_loc - 1)];
+					
+					if ($aa == (codonTOaa ($conn, $codon))) {
+						$aa_location = $aa_loc;	//VALUE
+						$aa_original = $aa;	//VALUE
+						$codon_original = $codon;	//VALUE
+						
+						if (!empty ($dna_substituted)) {
+						
+							if ($dna_original == $dna_substituted) {
+								$check = false;
+								$error = "Same original and substituted nucleotides";
+							}
+						
+							$codon_substituted = substr_replace($codon_original, $dna_substituted, ($within_codon - 1), 1);	//VALUE
+							$aa_substituted = codonTOaa ($conn, $codon_substituted);	//VALUE
+						}
+						else {
+							$check = false;
+							$error = "Fill Substituted nucleotide";
+						}
+					}
+					else {
+						$check = false;
+						$error = "Codon and Amino acid (Origional) do not match";
+					}
+				}
+				
+				// Neither Nucleotide or AA details are entered
+				elseif (empty($aa_location) && empty($dna_location)) {
+					$check = false;
+					$error = "Enter either Amino Acid details or Nucleotide details";
+				}
+			}
+			//neither isolates or %isolates entered
+			else {
+				$check = false;
+				$error = "Enter either Isolates or Percent Isolates";
+			}
+			
+			if ($check) {
+		
+				if (empty($region_id)) {
+					$region_id = null;
+				}
+				
+				if (empty($mic)) {
+					$mic = null;
+				}
+				
+			
+				$sql = "INSERT INTO paper_mutations (paper_experiment_id, paper_drug_gene_id, paper_region_id, isolates, percent_isolates, mic, aa_location, aa_original_id, aa_substituted_id, codon_original_id, codon_substituted_id, nucleotide_location, nucleotide_original, nucleotide_substituted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				$q = $conn -> prepare($sql);
+				$q->bindParam(1, $expt_id);
+				$q->bindParam(2, $pdg_id);
+				$q->bindParam(3, $region_id);
+				$q->bindParam(4, $isolates);
+				$q->bindParam(5, $per_isolates);
+				$q->bindParam(6, $mic);
+				$q->bindParam(7, $aa_location);
+				$q->bindParam(8, $aa_original);
+				$q->bindParam(9, $aa_substituted);
+				$q->bindParam(10, $codon_original);
+				$q->bindParam(11, $codon_substituted);
+				$q->bindParam(12, $dna_location);
+				$q->bindParam(13, $dna_original);
+				$q->bindParam(14, $dna_substituted);
+				$q->execute();
+			
+				
+				$array = array(true, $expt_id, $pdg_id, $region_id, $isolates, $per_isolates, $mic, $aa_location, $aa_original, $aa_substituted, $codon_original, $codon_substituted, $dna_location, $dna_original, $dna_substituted);
+				
+				echo json_encode($array);
+			}
+			else {
+				$array = array(false, $error);
+				echo json_encode($array);
+			}
+		}
 	}
 ?>
