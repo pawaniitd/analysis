@@ -267,7 +267,7 @@
 			$result = $q->fetch(PDO::FETCH_ASSOC);
 			$expt_id = $result['id'];
 		
-			$out_text = '<p class="indent experiment_info"><span class="bold">Isolates :</span> ' . $isolates . ' and <span class="bold">Experiment :</span> ' . $experiment . '<button type="button"><img src="images/cross-16.png"></button></p>' . "\n";
+			$out_text = '<p class="indent experiment_info close"><span class="bold">Isolates :</span> ' . $isolates . ' and <span class="bold">Experiment :</span> ' . $experiment . '<button type="button"><img src="images/cross-16.png"></button></p>' . "\n";
 			
 			$arr = array($expt_id, $out_text);	//create array to encode in json
 			echo json_encode($arr);
@@ -295,18 +295,18 @@
 			$q->bindParam(':i', $isolates);
 			$q->execute();
 			
-			$out_text = '<p>';
+			$out_text = '<p class="region_info close">';
 			if (!is_null($city)) {
-				$out_text .= '<span class="bold">City :</span> ' . $city . ', ';
+				$out_text .= '<span class="bold">City :</span> <span class="region_city">' . $city . '</span>, ';
 			}
 			if (!is_null($state)) {
-				$out_text .= '<span class="bold">State :</span> ' . $state . ', ';
+				$out_text .= '<span class="bold">State :</span> <span class="region_state">' . $state . '</span>, ';
 			}
 			if (!is_null($country)) {
-				$out_text .= '<span class="bold">Country :</span> ' . $country . ', ';
+				$out_text .= '<span class="bold">Country :</span> <span class="region_country">' . $country . '</span>, ';
 			}
-			$out_text .= '<span class="bold">Isolates :</span> ' . $isolates;
-			$out_text .= '</p>';
+			$out_text .= '<span class="bold">Isolates :</span> <span class="region_isolates">' . $isolates . '</span>';
+			$out_text .= '<button type="button"><img src="images/cross-16.png"></button></p>';
 			
 			echo $out_text;
 		}
@@ -654,6 +654,45 @@
 		if ($_GET['q'] == "delete_experiment") {
 			$pmid = $_GET['pmid'];
 			echo deleteExperiment($conn, $pmid);
+		}
+		
+		//Delete paper region information
+		if ($_GET['q'] == "delete_region") {
+			$pmid = $_GET['pmid'];
+			$city = $_GET['city'];
+			$state = $_GET['state'];
+			$country = $_GET['country'];
+			$isolates = $_GET['isolates'];
+			
+			$sql = "DELETE FROM paper_region WHERE pmid=:pmid";
+			if (!empty($city)) {
+				$sql .= " AND city=:city";
+			}
+			if (!empty($state)) {
+				$sql .= " AND state=:state";
+			}
+			if (!empty($country)) {
+				$sql .= " AND country=:country";
+			}
+			$sql .= " AND isolates=:isolates";
+			
+			$q = $conn -> prepare($sql);
+			$q->bindParam(':pmid', $pmid);
+			$q->bindParam(':isolates', $isolates);
+			if (!empty($city)) {
+				$q->bindParam(':city', $city);
+			}
+			if (!empty($state)) {
+				$q->bindParam(':state', $state);
+			}
+			if (!empty($country)) {
+				$q->bindParam(':country', $country);
+			}
+			
+			$q->execute();
+			
+			echo $q->rowCount();
+		
 		}
 	}
 ?>

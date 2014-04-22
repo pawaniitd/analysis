@@ -524,8 +524,6 @@ $(document).ready(function () {
 				alert(errorThrown);
 			}
 		});	//end ajax
-	
-		event.preventDefault();	//This prevents form submittion via html default
 	});	//end submit
 });	//end ready
 
@@ -583,6 +581,43 @@ $(document).ready(function () {
 	});	//end submit
 });	//end ready
 
+// Remove added region
+$(document).ready(function () {
+	$(document).on("click", "p.region_info > button", function (event) {
+		
+		var id = $("#current_pmid").html();
+		var city = $(this).siblings("span.region_city").html();
+		var state = $(this).siblings("span.region_state").html();
+		var country = $(this).siblings("span.region_country").html();
+		var isolates = $(this).siblings("span.region_isolates").html();
+	
+		$.ajax({
+			context: $(this).parent().parent(),
+			url: "modify.php",
+			data: {
+				q: "delete_region",
+				pmid: id,
+				city: city,
+				state: state,
+				country: country,
+				isolates: isolates
+			},
+			type: "GET",
+			dataType: "text",
+			success: function(data) {
+				if (data > 0) {
+					$(this).remove();
+				}
+				else {
+					alert("Could not delete region");
+				}
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+	});	//end submit
+});	//end ready
 /*===========================================================================================================================================================*/
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------------
