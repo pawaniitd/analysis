@@ -13,9 +13,9 @@
 
 <form class="indent block_input">
 	<input name="q" type="hidden" value="paper_mutation"/>
-	<input name="paper_experiment_id" type="hidden" value="<?php echo $expt_id ?>"/>
-	<input name="paper_drug-gene_id" type="hidden" value="<?php echo $dg_id ?>"/>
-	<input name="paper_region_id" type="hidden" value="<?php echo $region_id ?>"/>
+	<input class="paper_experiment_id" name="paper_experiment_id" type="hidden" value="<?php echo $expt_id ?>"/>
+	<input class="paper_drug-gene_id" name="paper_drug-gene_id" type="hidden" value="<?php echo $dg_id ?>"/>
+	<input class="paper_region_id" name="paper_region_id" type="hidden" value="<?php echo $region_id ?>"/>
 	
 	<fieldset>
 		<legend>Isolates</legend>
