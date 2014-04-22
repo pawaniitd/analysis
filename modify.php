@@ -330,7 +330,7 @@
 				echo $e->getMessage();
 			}
 			
-			$out_text = '<p><span class="bold">Id :</span> ' . $drug_gene_id . ' and <span class="bold">Isolates :</span> ' . $isolates . '</p>';
+			$out_text = '<p class="pdg_info close"><span class="bold">Id :</span> <span class="pdg_dgid">' . $drug_gene_id . '</span> and <span class="bold">Isolates :</span> <span class="pdg_isolates">' . $isolates . '</span><button type="button"><img src="images/cross-16.png"></button></p>';
 			echo $out_text;
 		}
 		
@@ -693,6 +693,22 @@
 			
 			echo $q->rowCount();
 		
+		}
+		
+		//Delete paper drug-gene information
+		if ($_GET['q'] == "delete_drug-gene") {
+			$pmid = $_GET['pmid'];
+			$dg_id = $_GET['dgid'];
+			$isolates = $_GET['isolates'];
+			
+			$sql = "DELETE FROM paper_drug_gene WHERE pmid=:pmid AND drug_gene_id=:dgid AND isolates=:isolates";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(':pmid', $pmid);
+			$q->bindParam(':dgid', $dg_id);
+			$q->bindParam(':isolates', $isolates);
+			$q->execute();
+			
+			echo $q->rowCount();
 		}
 	}
 ?>

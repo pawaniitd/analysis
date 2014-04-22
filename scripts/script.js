@@ -678,6 +678,39 @@ $(document).ready(function () {
 	});	//end submit
 });	//end ready
 
+// Remove added paper drug-gene
+$(document).ready(function () {
+	$(document).on("click", "p.pdg_info > button", function (event) {
+		
+		var id = $("#current_pmid").html();
+		var dg_id = $(this).siblings("span.pdg_dgid").html();
+		var isolates = $(this).siblings("span.pdg_isolates").html();
+	
+		$.ajax({
+			context: $(this).parent().parent(),
+			url: "modify.php",
+			data: {
+				q: "delete_drug-gene",
+				pmid: id,
+				dgid: dg_id,
+				isolates: isolates
+			},
+			type: "GET",
+			dataType: "text",
+			success: function(data) {
+				if (data > 0) {
+					$(this).remove();
+				}
+				else {
+					alert("Could not delete paper drug-gene");
+				}
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+	});	//end submit
+});	//end ready
 /*===========================================================================================================================================================*/
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------------
