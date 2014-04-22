@@ -82,12 +82,7 @@ function setOptions (data) {
 
 
 
-//Set relevance data for read papers (done earlier)
-$(document).ready(function () {
-	initial_relevance ("relevant");
-	initial_relevance ("non_relevant");
-	initial_relevance ("wrong_paper");
-});	//end ready
+
 
 //This part looks for the page num to load at the start of web application and then loads JPages
 $(document).ready(function () {
@@ -141,6 +136,17 @@ $(document).ready(function () {
 	});	//end jPages
 });	//end ready
 
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------------
+	Relevance
+-------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+//Set relevance data for read papers (done earlier)
+$(document).ready(function () {
+	initial_relevance ("relevant");
+	initial_relevance ("non_relevant");
+	initial_relevance ("wrong_paper");
+});	//end ready
+
+
 // Assign relevance using the function
 $(document).ready(function () {
 	$(".yes > button").click(function () {
@@ -174,6 +180,7 @@ $(document).ready(function () {
 		relevance("wrong_paper", $(this));
 	});	//end click
 });	//end ready
+/*===========================================================================================================================================================*/
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------------------
 	Add gene
@@ -459,7 +466,8 @@ $(document).ready(function () {
 	
 **************************************************************/
 
-/* Paper Experiment -----------------------------------------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------- 	Paper Experiment
+-------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 // Submit form
 $(document).ready(function () {
@@ -476,6 +484,41 @@ $(document).ready(function () {
 				
 				$("div#paper_mutation > button").attr("data-paper_experiment", "yes");	//Confirm that experiment has been added
 				$("#paper_mutation").attr("data-experiment_id", data[0]);	//Set the experiment id value for mutation forms to use
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+	
+		event.preventDefault();	//This prevents form submittion via html default
+	});	//end submit
+});	//end ready
+
+// Remove experiment details and refresh form
+$(document).ready(function () {
+	$(document).on("click", "p.experiment_info > button", function (event) {
+		
+		var id = $("#current_pmid").html();
+	
+		$.ajax({
+			context: $(this).parent(),
+			url: "modify.php",
+			data: {
+				q: "delete_experiment",
+				pmid: id
+			},
+			type: "GET",
+			dataType: "text",
+			success: function(data) {
+				if (data > 0) {
+					$(this).load("includes/paper_mutation_reset.html #paper_experiment>form", function() {
+						$(this).children("form").unwrap();
+						$("#paper_experiment input.pmid").val(id);
+					});
+				}
+				else {
+					alert("Could not delete experiment");
+				}
 			},
 			error: function(xhr, status, errorThrown) {
 				alert(errorThrown);

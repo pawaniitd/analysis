@@ -25,7 +25,19 @@
 		
 		return $result['amino_acid_id'];
 	}
-	///////////////////////////////		
+	//////////////////////////////	
+	
+	
+	//////FUNCTION////////////////
+	//delete paper experiment
+	function deleteExperiment ($conn, $pmid){
+		$sql = "DELETE FROM paper_experiment WHERE pmid=?";
+		$q = $conn -> prepare($sql);
+		$q->bindParam(1, $pmid);
+		$q->execute();
+		return $q->rowCount();
+	}
+	//////////////////////////////
 
 
 
@@ -254,8 +266,8 @@
 			$q->execute();
 			$result = $q->fetch(PDO::FETCH_ASSOC);
 			$expt_id = $result['id'];
-			
-			$out_text = '<p><span class="bold">Isolates :</span> ' . $isolates . ' and <span class="bold">Experiment :</span> ' . $experiment . '</p>' . "\n";
+		
+			$out_text = '<p class="indent experiment_info"><span class="bold">Isolates :</span> ' . $isolates . ' and <span class="bold">Experiment :</span> ' . $experiment . '<button type="button"><img src="images/cross-16.png"></button></p>' . "\n";
 			
 			$arr = array($expt_id, $out_text);	//create array to encode in json
 			echo json_encode($arr);
@@ -615,11 +627,7 @@
 			}
 			
 			
-			$sql = "DELETE FROM paper_experiment WHERE pmid=?";
-			$q = $conn -> prepare($sql);
-			$q->bindParam(1, $pmid);
-			$q->execute();
-			$expt_count = $q->rowCount();
+			$expt_count = deleteExperiment($conn, $pmid);
 			
 			$sql = "DELETE FROM paper_region WHERE pmid=?";
 			$q = $conn -> prepare($sql);
@@ -638,8 +646,14 @@
 				$q = $conn -> prepare($sql);
 				$q->bindParam(1, $expt);
 				$q->execute();
-				$emut_count = $q->rowCount();
+				$mut_count = $q->rowCount();
 			}
+		}
+		
+		//Delete paper experiment information
+		if ($_GET['q'] == "delete_experiment") {
+			$pmid = $_GET['pmid'];
+			echo deleteExperiment($conn, $pmid);
 		}
 	}
 ?>
