@@ -18,7 +18,7 @@
 		<option value=""></option>
 		<?php
 			try {
-			$sql = "SELECT id, drug_name, gene_name FROM view_paper_drug_gene WHERE pmid=:pmid";
+			$sql = "SELECT id, drug_name, gene_name, isolates FROM view_paper_drug_gene WHERE pmid=:pmid";
 			$q = $conn -> prepare($sql);
 			$q->bindParam(':pmid', $pmid);
 			$q->execute();
@@ -30,7 +30,7 @@
 			}
 			
 			foreach ($result as $x) {
-				echo '<option value="' . $x['id'] . '">' . trim($x['drug_name']) . ' and ' . trim($x['gene_name']) . '</option>' . "\n";
+				echo '<option value="' . $x['id'] . '">' . trim($x['drug_name']) . ' and ' . trim($x['gene_name']) . ' [' . $x['isolates'] . ']' . '</option>' . "\n";
 			}
 		?>
 	</select>
@@ -40,7 +40,7 @@
 			echo '<option value=""></option>' . "\n";
 			
 			try {
-			$sql = "SELECT id, city, state, country FROM paper_region WHERE pmid=:pmid";
+			$sql = "SELECT id, city, state, country, isolates FROM paper_region WHERE pmid=:pmid";
 			$q = $conn -> prepare($sql);
 			$q->bindParam(':pmid', $pmid);
 			$q->execute();
@@ -52,7 +52,17 @@
 			}
 			
 			foreach ($result as $x) {
-				echo '<option value="' . $x['id'] . '">' . trim($x['city']) . ', ' . trim($x['state']) . ', ' . trim($x['country']) . '</option>' . "\n";
+				$txt = '';
+				if (!empty($x['city'])) {
+					$txt .= trim($x['city']) . ', ';
+				}
+				if (!empty($x['state'])) {
+					$txt .= trim($x['state']) . ', ';
+				}
+				if (!empty($x['country'])) {
+					$txt .= trim($x['country']) . ', ';
+				}
+				echo '<option value="' . $x['id'] . '">' . $txt . ' [' . $x['isolates'] . ']' . '</option>' . "\n";
 			}
 			echo '</select>' . "\n";				
 		}
