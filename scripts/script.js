@@ -149,6 +149,25 @@ $(document).ready(function () {
 	
 	$(".no > button").click(function () {
 		relevance("no", $(this));
+		
+		var pmid = $(this).parent().parent().parent().attr('id');
+		
+		$.ajax({
+			url: "modify.php",
+			data: {
+				q: "delete",
+				value: pmid
+			},
+			type: "GET",
+			dataType: "text",
+			success: function(data) {
+				alert("Deleted");
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+		
 	});	//end click
 	
 	$(".wrong_paper > button").click(function () {
@@ -156,6 +175,9 @@ $(document).ready(function () {
 	});	//end click
 });	//end ready
 
+/*-------------------------------------------------------------------------------------------------------------------------------------------------------------
+	Add gene
+-------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 //Script to add gene to the database - JQuery UI Dialog Form
 $(document).ready(function () {
 
@@ -173,8 +195,13 @@ $(document).ready(function () {
 					type: "GET",
 					dataType: "text",
 					success: function(data) {
-						$("#add_gene input:text").val('');
-						$("#add_gene_button img").show("fade").delay(5000).hide("fade");	//To show tick mark for 5 sec upon success
+						if (data == "Success") {
+							$("#add_gene input:text").val('');
+							$("#add_gene_button img").show("fade").delay(5000).hide("fade");	//To show tick mark for 5 sec upon success
+						}
+						else {
+							alert(data);
+						}
 					},
 					error: function(xhr, status, errorThrown) {
 						alert(errorThrown);
@@ -201,6 +228,7 @@ $(document).ready(function () {
 		$( "#add_gene" ).dialog( "open" );
 	});
 });	//end ready
+/*===========================================================================================================================================================*/
 
 /*
  *	Feature - Add Drug	------------------------------------------------------------------------
@@ -461,8 +489,7 @@ $(document).ready(function () {
 /*===========================================================================================================================================================*/
 
 
-/*------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-	Paper Region 
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------- 	Paper Region 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 // Add new region button - to insert new form upon pressing the Add New button
@@ -715,7 +742,7 @@ $(document).ready(function () {
 		if (location) {	//check if location is set
 			//main
 			var aa = $(this).val();
-			var pdg_id = $(this).siblings("input.paper_drug-gene_id").val();
+			var pdgID = $(this).parent().siblings("input.paper_drug-gene_id").val();
 			
 			$.ajax({
 				url: "modify.php",
@@ -723,7 +750,7 @@ $(document).ready(function () {
 				data: {
 					q: "mutation_check_aa",
 					location: location,
-					pdg_id: 2,
+					pdg_id: pdgID,
 					amino_acid: aa
 				},
 				type: "GET",
@@ -736,7 +763,11 @@ $(document).ready(function () {
 						$(this).siblings("div.paper_mutation_aa-original").html(out);
 					}
 					else {
-						alert("Amino Acid in that location did not match!");
+						if (check) {
+							alert("Amino Acid in that location did not match!");
+						}
+						check = false;
+						$('select.paper_mutation_aa-original').val('').trigger('chosen:updated');
 					}
 				},
 				error: function(xhr, status, errorThrown) {

@@ -272,7 +272,7 @@
 			empty($city) ? null : $city;
 			empty($state) ? null : $state;
 			empty($country) ? null : $country;
-			empty($isolates) ? null : $category;
+			empty($isolates) ? null : $isolates;
 			
 			$sql = "INSERT INTO paper_region (pmid, city, state, country, isolates) VALUES (:p, :ci, :s, :co, :i)";
 			$q = $conn -> prepare($sql);
@@ -452,6 +452,8 @@
 		
 						$result = $q->fetchAll(PDO::FETCH_ASSOC);
 						
+						$compare = false;
+						
 						foreach ($result as $x) {
 							$y = $x['seq'];
 							$count = 0;
@@ -462,17 +464,25 @@
 							}
 							if ($count == 2) {
 								$codon_substituted = $y;	//VALUE
+								$compare = true;
 								break;
 							}
+						}
+						
+						if(!$compare) {	//checks if codon_substituted with single mutation wrt original codon exists
+							$check = false;
+							$error = "Original codon and final codon do not have single mutation.";
 						}
 					}
 					
 					//Nucleotide
-					for($i=0;$i<strlen($codon_original);$i++) {
-						if ($codon_original[$i] != $codon_substituted[$i]) {
-							$dna_location = ((($aa_location - 1)*3) + 1) + $i;	//VALUE
-							$dna_original = $codon_original[$i];	//VALUE
-							$dna_substituted = $codon_substituted[$i];	//VALUE
+					if ($check) {
+						for($i=0;$i<strlen($codon_original);$i++) {
+							if ($codon_original[$i] != $codon_substituted[$i]) {
+								$dna_location = ((($aa_location - 1)*3) + 1) + $i;	//VALUE
+								$dna_original = $codon_original[$i];	//VALUE
+								$dna_substituted = $codon_substituted[$i];	//VALUE
+							}
 						}
 					}
 				}
@@ -497,38 +507,39 @@
 					$seq = $result['seq'];
 					$protein_seq = $result['protein_seq'];
 					
-					if (empty($dna_original)) {
-						$dna_original = $seq[($dna_location - 1)];
-					}
+					if ($seq[($dna_location-1)] == $dna_original) {
 					
-					 
-					
-					$codon = substr($seq, ($codon_loc - 1), 3);
-					$aa = $protein_seq[($aa_loc - 1)];
-					
-					if ($aa == (codonTOaa ($conn, $codon))) {
-						$aa_location = $aa_loc;	//VALUE
-						$aa_original = $aa;	//VALUE
-						$codon_original = $codon;	//VALUE
+						$codon = substr($seq, ($codon_loc - 1), 3);
+						$aa = $protein_seq[($aa_loc - 1)];
 						
-						if (!empty ($dna_substituted)) {
-						
-							if ($dna_original == $dna_substituted) {
-								$check = false;
-								$error = "Same original and substituted nucleotides";
+						if ($aa == (codonTOaa ($conn, $codon))) {
+							$aa_location = $aa_loc;	//VALUE
+							$aa_original = $aa;	//VALUE
+							$codon_original = $codon;	//VALUE
+							
+							if (!empty ($dna_substituted)) {
+							
+								if ($dna_original == $dna_substituted) {
+									$check = false;
+									$error = "Same original and substituted nucleotides";
+								}
+							
+								$codon_substituted = substr_replace($codon_original, $dna_substituted, ($within_codon - 1), 1);	//VALUE
+								$aa_substituted = codonTOaa ($conn, $codon_substituted);	//VALUE
 							}
-						
-							$codon_substituted = substr_replace($codon_original, $dna_substituted, ($within_codon - 1), 1);	//VALUE
-							$aa_substituted = codonTOaa ($conn, $codon_substituted);	//VALUE
+							else {
+								$check = false;
+								$error = "Fill Substituted nucleotide";
+							}
 						}
 						else {
 							$check = false;
-							$error = "Fill Substituted nucleotide";
+							$error = "Codon and Amino acid (Origional) do not match";
 						}
 					}
 					else {
 						$check = false;
-						$error = "Codon and Amino acid (Origional) do not match";
+						$error = "Incorrect nucleotide at the given location.";
 					}
 				}
 				
@@ -545,7 +556,7 @@
 			}
 			
 			if ($check) {
-		
+			
 				if (empty($region_id)) {
 					$region_id = null;
 				}
@@ -581,6 +592,53 @@
 			else {
 				$array = array(false, $error);
 				echo json_encode($array);
+			}
+		}
+		
+		
+		//Delete all paper information
+		if ($_GET['q'] == "delete") {
+			$pmid = $_GET['value'];
+			$expt = '';
+			
+			$sql = "SELECT id FROM paper_experiment WHERE pmid=?";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(1, $pmid);
+			$q->execute();
+			$result = $q->fetch(PDO::FETCH_ASSOC);
+			
+			if (($q->rowCount() > 0) || empty($result)) {
+				$expt = null;
+			}
+			else {
+				$expt = $result['id'];
+			}
+			
+			
+			$sql = "DELETE FROM paper_experiment WHERE pmid=?";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(1, $pmid);
+			$q->execute();
+			$expt_count = $q->rowCount();
+			
+			$sql = "DELETE FROM paper_region WHERE pmid=?";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(1, $pmid);
+			$q->execute();
+			$region_count = $q->rowCount();
+			
+			$sql = "DELETE FROM paper_drug_gene WHERE pmid=?";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(1, $pmid);
+			$q->execute();
+			$dg_count = $q->rowCount();
+			
+			if (!empty($expt)) {
+				$sql = "DELETE FROM paper_mutations WHERE paper_experiment_id=?";
+				$q = $conn -> prepare($sql);
+				$q->bindParam(1, $expt);
+				$q->execute();
+				$emut_count = $q->rowCount();
 			}
 		}
 	}
