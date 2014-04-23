@@ -710,5 +710,40 @@
 			
 			echo $q->rowCount();
 		}
+		
+		//Delete paper mutation information
+		if ($_GET['q'] == "delete_mutation") {
+			$expt_id = $_GET['exptid'];
+			$pdg_id = $_GET['pdgid'];
+			$region_id = $_GET['regionid'];
+			
+			$mic = $_GET['mic'];
+			$isolates = $_GET['isolates'];
+			
+			$dna_location = $_GET['location'];
+			$dna_ori = $_GET['original'];
+			$dna_sub = $_GET['substituted'];
+			
+			$sql = "DELETE FROM paper_mutations WHERE paper_experiment_id=:expt AND paper_drug_gene_id=:pdg AND isolates=:iso AND mic=:mic AND nucleotide_location=:loc AND nucleotide_original=:ori AND nucleotide_substituted=:sub";
+			if (is_numeric($region_id)) {
+				$sql .= " AND paper_region_id=:rid";
+			}
+			
+			$q = $conn -> prepare($sql);
+			$q->bindParam(':expt', $expt_id);
+			$q->bindParam(':pdg', $pdg_id);
+			$q->bindParam(':iso', $isolates);
+			$q->bindParam(':mic', $mic);
+			$q->bindParam(':loc', $dna_location);
+			$q->bindParam(':ori', $dna_ori);
+			$q->bindParam(':sub', $dna_sub);
+			if (is_numeric($region_id)) {
+				$q->bindParam(':rid', $region_id);
+			}
+			
+			$q->execute();
+			
+			echo $q->rowCount();
+		}
 	}
 ?>

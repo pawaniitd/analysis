@@ -656,7 +656,7 @@ $(document).ready(function () {
 	});	//end click
 });	//end ready
 
-// Submit the paper_region form
+// Submit the paper_drug-gene form
 $(document).ready(function () {
 	$(document).on("submit", "div#paper_drug-gene > div.forms form" , function (event) {
 		$.ajax({
@@ -754,6 +754,8 @@ $(document).ready(function () {
 						$("#paper_mutation_group_" + num).append('<div></div>');
 						
 						$("#paper_mutation_group_" + num).append('<button type="button" class="add_mutation_button add_new">Add Mutation</button>');
+						$("#paper_mutation_group_" + num).append('<button type="button" class="close_mut_group add_new">Close Group</button>');
+						
 					},
 					error: function(xhr, status, errorThrown) {
 						alert(errorThrown);
@@ -766,6 +768,18 @@ $(document).ready(function () {
 		}
 		else {
 			alert("Please add experiment data first");
+		}
+	});	//end click
+});	//end ready
+
+// Close mutation group upon pressing the Close Group button
+$(document).ready(function () {
+	$(document).on("click", ".paper_mutation_group > button.close_mut_group", function () {
+		if ( !$.trim( $(this).siblings("div").html() ).length ) {
+			$(this).parent().remove();
+		}
+		else {
+			alert("Cannot remove group until all mutation forms are removed");
 		}
 	});	//end click
 });	//end ready
@@ -963,14 +977,17 @@ $(document).ready(function () {
 					var ori_aa = $(this).find('select.paper_mutation_aa-original option[value="' + data[8] + '"]').text();
 					var sub_aa = $(this).find('select.paper_mutation_aa-original option[value="' + data[9] + '"]').text();
 					
-					var txt = "<div class=\"mut_data\">\n<h3>Isolates</h3>\n";
-					txt += "<p>No. = " + data[4] + ", Percent = " + data[5] + ", MIC = " + data[6] + "</p>\n";
+					var txt = "<div class=\"mut_data\">\n";
+					txt += '<span style="display: none;" class="mut_pdg_id">' + data[2] + '</span>' + "\n";
+					txt += '<span style="display: none;" class="mut_region_id">' + data[3] + '</span>' + "\n";
+					txt += "<h3>Isolates</h3>\n";
+					txt += "<p>No. = <span class=\"mut_isolates\">" + data[4] + "</span>, Percent = " + data[5] + ", MIC = <span class=\"mut_mic\">" + data[6] + "</span></p>\n";
 					txt += "<h3>Amino Acid</h3>\n";
 					txt += "<p>Location = " + data[7] + ", Original = " + ori_aa + ", Substituted = " + sub_aa + "</p>\n";
 					txt += "<h3>Codon</h3>\n";
 					txt += "<p>Original = " + data[10] + ", Substituted = " + data[11] + "</p>\n";
 					txt += "<h3>Nucleotide</h3>\n";
-					txt += "<p>Location = " + data[12] + ", Original = " + data[13] + ", Substituted = " + data[14] + "</p>\n</div>\n";
+					txt += "<p>Location = <span class=\"mut_dna_location\">" + data[12] + "</span>, Original = <span class=\"mut_dna_ori\">" + data[13] + "</span>, Substituted = <span class=\"mut_dna_sub\">" + data[14] + "</span></p>\n<button class=\"close_mut_form\" type=\"button\"><img src=\"images/cross-16.png\"></button></div>\n";
 					
 					$(this).replaceWith(txt);
 					
@@ -985,6 +1002,52 @@ $(document).ready(function () {
 		});	//end ajax
 	
 		event.preventDefault();	//This prevents form submittion via html default
+	});	//end submit
+});	//end ready
+
+// Remove added paper mutations form
+$(document).ready(function () {
+	$(document).on("click", "button.close_mut_form", function (event) {
+		
+		var expt_id = $("div#paper_mutation").attr("data-experiment_id");
+		var pdg_id = $(this).siblings("span.mut_pdg_id").html();
+		var region_id = $(this).siblings("span.mut_region_id").html();
+		
+		var isolates = $(this).siblings("p").children("span.mut_isolates").html();
+		var mic = $(this).siblings("p").children("span.mut_mic").html();
+		
+		var loc = $(this).siblings("p").children("span.mut_dna_location").html();
+		var ori = $(this).siblings("p").children("span.mut_dna_ori").html();
+		var sub = $(this).siblings("p").children("span.mut_dna_sub").html();
+	
+		$.ajax({
+			context: $(this).parent(),
+			url: "modify.php",
+			data: {
+				q: "delete_mutation",
+				exptid: expt_id,
+				pdgid: pdg_id,
+				regionid: region_id,
+				isolates: isolates,
+				mic: mic,
+				location: loc,
+				original: ori,
+				substituted: sub
+			},
+			type: "GET",
+			dataType: "text",
+			success: function(data) {
+				if (data > 0) {
+					$(this).remove();
+				}
+				else {
+					alert("Could not delete paper mutation");
+				}
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
 	});	//end submit
 });	//end ready
 /*===========================================================================================================================================================*/
