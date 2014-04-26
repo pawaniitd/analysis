@@ -337,7 +337,7 @@ label {
     display: inline-block;
     margin-right: 20px;
     padding: 10px;
-    vertical-align: top;
+    vertical-align: middle;
 	width: 220px;
 }
 
@@ -358,7 +358,6 @@ label {
     border-color: #CCCCCC;
     border-style: solid;
     border-width: 1px;
-    display: flex;
 }
 
 #mutation_forms form.block_input label{
@@ -370,7 +369,7 @@ label {
 
 #mutation_forms form.block_input div.chosen-container{
 	display: block;
-	margin: 10px 0px;
+	margin: 10px 10px 10px 0;
 }
 
 #mutation_forms .indent {
@@ -430,6 +429,7 @@ label {
 
 #mutation_forms div.mut_data {
 	margin: 10px 30px;
+	padding: 10px;
 	background-color: #F5F5F5;
     border-color: #CCCCCC;
     border-style: solid;
@@ -483,12 +483,10 @@ input[type="number"] {
 	background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
     border: medium none;
     cursor: pointer;
-    left: 98.9%;
+    left: 99.8%;
     line-height: 10px;
     margin: 0;
     padding: 0;
     position: relative;
-    top: -138px;
+    top: -170px;
 }
-
-
