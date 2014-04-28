@@ -1117,6 +1117,9 @@ $(document).ready(function () {
 			success: function(data) {
 				$(this).append(data);
 				
+				$(this).children("form.block_input").last().find("select.select_mutation_aa").hide("fade");
+				$(this).children("form.block_input").last().find("select.select_mutation_dna").hide("fade");
+				
 				//Activate chosen
 				$(this).find("select").chosen({	//Activate chosen on the select tag
 					disable_search_threshold: 5,

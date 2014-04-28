@@ -14,6 +14,7 @@ my $location_end = undef;	#Gene - location end
 my $seq = undef;	#Gene - sequence
 my $protein_id = undef;	#Gene - protein id
 my $protein_seq = undef;	#Gene - protein sequence
+my $gene_type = undef;	#Gene - type (Protein or RNA)
 
 
 $inputFile = "F:/Eumentis/Tb/Analysis/NCBI/H37Rv.gb";
@@ -68,6 +69,8 @@ for my $feature ($sequence->get_SeqFeatures()) {
 					my @proSeq = $feature->get_tag_values('translation');
 					$protein_seq = $proSeq[0];	#Gene - protein sequence
 					
+					$gene_type = "Protein";
+					
 					last;
 				}
 			}
@@ -102,6 +105,8 @@ for my $feature ($sequence->get_SeqFeatures()) {
 					
 					$seq = $feature->seq()->seq();	#Gene - sequence
 					
+					$gene_type = "RNA";
+					
 					last;
 				}
 			}
@@ -118,8 +123,8 @@ if ($check == 1) {
 
 	$table = "h37rv_genes";
 
-	$sth = $dbh->prepare("INSERT INTO $table (id, locus_tag, name, location_start, location_stop, seq, protein_id, protein_seq) VALUES (?, ?, ?, ?, ?, ?, ?, ?)") or die $DBI::errstr;
-	$sth->execute($geneID, $locus_tag, $name, $location_start, $location_end, $seq, $protein_id, $protein_seq) or die $DBI::errstr;
+	$sth = $dbh->prepare("INSERT INTO $table (id, locus_tag, name, location_start, location_stop, seq, protein_id, protein_seq, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)") or die $DBI::errstr;
+	$sth->execute($geneID, $locus_tag, $name, $location_start, $location_end, $seq, $protein_id, $protein_seq, $gene_type) or die $DBI::errstr;
 
 	$sth->finish();
 	$dbh->commit or die $DBI::errstr;

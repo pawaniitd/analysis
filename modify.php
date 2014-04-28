@@ -377,6 +377,14 @@
 		//Individual mutation form processing 
 		if ($_GET['q'] == "paper_mutation") {
 		
+			//protein_check = true, if the mutation form submitted is for a gene that has protein as its product
+			//protein_check = false, if the mutation form submitted is for a gene that has RNA as its product
+			$protein_check_val = $_GET['protein_check'];
+			$protein_check = true;
+			if ($protein_check_val == "N") {
+				$protein_check = false;
+			}
+		
 			$check = true;
 			$error = "";
 			
@@ -388,16 +396,27 @@
 			$per_isolates = $_GET['paper_mutation_percent-isolates'];
 			$mic = $_GET['paper_mutation_mic'];
 			
-			$aa_location = $_GET['paper_mutation_aa-location'];	
-			$aa_original = $_GET['paper_mutation_aa-original'];
-			$aa_substituted = $_GET['paper_mutation_aa-substituted'];
+			$aa_location = null;	
+			$aa_original = null;
+			$aa_substituted = null;
 			
-			$codon_original = $_GET['paper_mutation_codon-original'];
-			$codon_substituted= $_GET['paper_mutation_codon-substituted'];
+			$codon_original = null;
+			$codon_substituted= null;
+			
+			if ($protein_check) {
+				$aa_location = $_GET['paper_mutation_aa-location'];	
+				$aa_original = $_GET['paper_mutation_aa-original'];
+				$aa_substituted = $_GET['paper_mutation_aa-substituted'];
+				
+				$codon_original = $_GET['paper_mutation_codon-original'];
+				$codon_substituted= $_GET['paper_mutation_codon-substituted'];
+			}
 			
 			$dna_location = $_GET['paper_mutation_nucleotide-location'];
 			$dna_original = $_GET['paper_mutation_nucleotide-original'];
 			$dna_substituted = $_GET['paper_mutation_nucleotide-substituted'];
+			
+		
 			
 			if (empty($expt_id)) {
 				die("Experiment ID not filled");
@@ -407,7 +426,7 @@
 				die("Paper Drug-Gene ID not filled");
 			}
 			
-			//From valitation
+			//From valitation - ISOLATES
 			if (!empty($per_isolates) || !empty($isolates)) {
 			
 				//check isolates and percent isolates
@@ -499,8 +518,8 @@
 					}
 				}
 				
-				// Only Nucleotide details are entered
-				elseif (empty($aa_location) && !empty($dna_location)) {
+				// Only Nucleotide details are entered and the gene product is protein
+				elseif (empty($aa_location) && !empty($dna_location) && $protein_check) {
 				
 					$within_codon = $dna_location % 3;
 					if ($within_codon == 0) {
@@ -552,6 +571,36 @@
 					else {
 						$check = false;
 						$error = "Incorrect nucleotide at the given location.";
+					}
+				}
+				
+				// Only Nucleotide details are entered and the gene product is not protein
+				elseif (empty($aa_location) && !empty($dna_location) && !$protein_check) {
+					$sql = "SELECT seq, protein_seq FROM h37rv_genes WHERE name IN (SELECT gene_name FROM view_paper_drug_gene WHERE id=:id)";
+					$q = $conn -> prepare($sql);
+					$q->bindParam(':id', $pdg_id);
+					$q->execute();
+					
+					$result = $q->fetch(PDO::FETCH_ASSOC);
+		
+					$seq = $result['seq'];
+					
+					if ($seq[($dna_location-1)] == $dna_original) {
+						if (!empty ($dna_substituted)) {
+							
+							if ($dna_original == $dna_substituted) {
+								$check = false;
+								$error = "Same original and substituted nucleotides";
+							}
+						}
+						else {
+							$check = false;
+							$error = "Fill Substituted nucleotide";
+						}
+					}
+					else {
+						$check = false;
+						$error = "Incorrect original nucleotide at the given location.";
 					}
 				}
 				
