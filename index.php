@@ -93,6 +93,25 @@
 			<div id="add_gene_button">
 				<a href="#">Add Gene</a>
 				<img src="images/tick1.png" alt="Left" height="8" width="10" style="display: none;">
+				<!-- Loading or processing symbol -->
+				<div id="circularG" style="display:none;">
+					<div id="circularG_1" class="circularG">
+					</div>
+					<div id="circularG_2" class="circularG">
+					</div>
+					<div id="circularG_3" class="circularG">
+					</div>
+					<div id="circularG_4" class="circularG">
+					</div>
+					<div id="circularG_5" class="circularG">
+					</div>
+					<div id="circularG_6" class="circularG">
+					</div>
+					<div id="circularG_7" class="circularG">
+					</div>
+					<div id="circularG_8" class="circularG">
+					</div>
+				</div>
 			</div>
 			<div id="add_drug_button">
 				<a href="#">Add Drug</a>

@@ -204,6 +204,9 @@ $(document).ready(function () {
 		dialogClass: "no-close",
 		buttons: {
 			"Add": function() {
+			
+				$("#circularG").show("fade");	//Start the processing animation
+				
 				$.ajax({
 					url: "modify.php",
 					data: $("#add_gene > form").serialize(),
@@ -212,6 +215,7 @@ $(document).ready(function () {
 					success: function(data) {
 						if (data == "Success") {
 							$("#add_gene input:text").val('');
+							$("#circularG").hide("fade");	//To stop the processing animation
 							$("#add_gene_button img").show("fade").delay(5000).hide("fade");	//To show tick mark for 5 sec upon success
 						}
 						else {
