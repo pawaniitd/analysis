@@ -171,6 +171,39 @@
 		<div id="mutation_forms" style="display: none;">
 		</div>
 		
+		<div id="mutation_group_choice" title="Choose type of mutation group">
+			<p>Please select the type of mutation group you want to add.</p>
+		</div>
+		
+		<select id="reference_aa_list" style="display: none;">
+			<option value="A">Alanine (Ala) [A]</option>
+			<option value="R">Arginine (Arg) [R]</option>
+			<option value="N">Asparagine (Asn) [N]</option>
+			<option value="D">Aspartic acid (Asp) [D]</option>
+			<option value="C">Cysteine (Cys) [C]</option>
+			<option value="E">Glutamic acid (Glu) [E]</option>
+			<option value="Q">Glutamine (Gln) [Q]</option>
+			<option value="G">Glycine (Gly) [G]</option>
+			<option value="H">Histidine (His) [H]</option>
+			<option value="I">Isoleucine (Ile) [I]</option>
+			<option value="L">Leucine (Leu) [L]</option>
+			<option value="K">Lysine (Lys) [K]</option>
+			<option value="M">Methionine (Met) [M]</option>
+			<option value="F">Phenylalanine (Phe) [F]</option>
+			<option value="P">Proline (Pro) [P]</option>
+			<option value="S">Serine (Ser) [S]</option>
+			<option value="T">Threonine (Thr) [T]</option>
+			<option value="W">Tryptophan (Trp) [W]</option>
+			<option value="Y">Tyrosine (Tyr) [Y]</option>
+			<option value="V">Valine (Val) [V]</option>
+			<option value="O">Pyrrolysine (Ply) [O]</option>
+			<option value="U">Selenocysteine (Sec) [U]</option>
+			<option value="B">Aspartic acid or Asparagine (Asx) [B]</option>
+			<option value="Z">Glutamine or Glutamic acid (Glx) [Z]</option>
+			<option value="J">Isoleucine or Valine (Xle) [J]</option>
+			<option value="X">Unknown (Xaa) [X]</option>
+		</select>
+		
 	</div>
 </body>
 
