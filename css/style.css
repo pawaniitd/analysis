@@ -492,6 +492,20 @@ input[type="number"] {
     top: -170px;
 }
 
+#mutation_forms .paper_mutation_group button.minimize_mut_group {
+	background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+    border: medium none;
+    cursor: pointer;
+    left: -0.9%;
+    line-height: 10px;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    top: -51px;
+}
+
+
+
 
 /*
 	CSS for loading or processing symbol

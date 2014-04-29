@@ -329,8 +329,15 @@
 				//Do your error handling here
 				echo $e->getMessage();
 			}
+			$sql = "SELECT drug_name, gene_name FROM view_drug_gene WHERE id=?";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(1, $drug_gene_id);
+			$q->execute();
+			$result = $q->fetch(PDO::FETCH_ASSOC);
 			
-			$out_text = '<p class="pdg_info close"><span class="bold">Id :</span> <span class="pdg_dgid">' . $drug_gene_id . '</span> and <span class="bold">Isolates :</span> <span class="pdg_isolates">' . $isolates . '</span><button type="button"><img src="images/cross-16.png"></button></p>';
+			
+			
+			$out_text = '<p class="pdg_info close"><span class="bold">Id :</span> <span class="pdg_dgid" style="display:none;">' . $drug_gene_id . '</span>' . $result['drug_name'] . '-' . $result['gene_name'] . '</span> and <span class="bold">Isolates :</span> <span class="pdg_isolates">' . $isolates . '</span><button type="button"><img src="images/cross-16.png"></button></p>';
 			echo $out_text;
 		}
 		

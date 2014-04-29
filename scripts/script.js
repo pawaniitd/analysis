@@ -757,6 +757,7 @@ $(document).ready(function () {
 						num += 1;
 						$("div#paper_mutation > div.forms").append('<div class="paper_mutation_group indent" id="paper_mutation_group_' + num + '"><h2>Mutation Group</h2></div>');
 						
+						$("#paper_mutation_group_" + num).append('<button type="button" class="minimize_mut_group"><img src="images/minimize-16.png"></button>');
 						$("#paper_mutation_group_" + num).append(data);
 						//Activate chosen
 						$(".form_paper_mutation_group select").chosen({	//Activate chosen on the select tag
@@ -769,6 +770,7 @@ $(document).ready(function () {
 						
 						$("#paper_mutation_group_" + num).append('<button type="button" class="add_mutation_button add_new">Add Mutation</button>');
 						$("#paper_mutation_group_" + num).append('<button type="button" class="close_mut_group add_new">Close Group</button>');
+						
 						
 					},
 					error: function(xhr, status, errorThrown) {
@@ -783,6 +785,13 @@ $(document).ready(function () {
 		else {
 			alert("Please add experiment data first");
 		}
+	});	//end click
+});	//end ready
+
+// Minimize mutation group upon pressing the minimize button
+$(document).ready(function () {
+	$(document).on("click", "button.minimize_mut_group", function () {
+		$(this).siblings("div").slideToggle();
 	});	//end click
 });	//end ready
 
@@ -1017,13 +1026,15 @@ $(document).ready(function () {
 					txt += "<h3>Isolates</h3>\n";
 					txt += "<p>No. = <span class=\"mut_isolates\">" + data[4] + "</span>, Percent = " + data[5] + ", MIC = <span class=\"mut_mic\">" + data[6] + "</span></p>\n";
 					txt += "<h3>Amino Acid</h3>\n";
-					txt += "<p>Location = <span class=\"mut_aa_location\">" + data[7] + "</span>, Original = <span class=\"mut_aa_ori_name\">" + ori_aa + "</span>, Substituted = <span class=\"mut_dna_sub_name\">" + sub_aa + "</span></p>\n";
+					txt += "<p>Location = <span class=\"mut_aa_location\">" + data[7] + "</span>, Original = <span class=\"mut_aa_ori_name\">" + ori_aa + "</span>, Substituted = <span class=\"mut_aa_sub_name\">" + sub_aa + "</span></p>\n";
 					txt += "<h3>Codon</h3>\n";
 					txt += "<p>Original = " + data[10] + ", Substituted = " + data[11] + "</p>\n";
 					txt += "<h3>Nucleotide</h3>\n";
 					txt += "<p>Location = <span class=\"mut_dna_location\">" + data[12] + "</span>, Original = <span class=\"mut_dna_ori\">" + data[13] + "</span>, Substituted = <span class=\"mut_dna_sub\">" + data[14] + "</span></p>\n<button class=\"close_mut_form\" type=\"button\"><img src=\"images/cross-16.png\"></button>\n";
-					txt += '<button type="button" class="add_new add_aa_form">Add same AA</button>' + "\n";
-					txt += '<button type="button" class="add_new add_dna_form">Add same Nucleotide</button>' + "\n";
+					txt += '<button type="button" class="add_new add_aa_form">Add same AA - Original</button>' + "\n";
+					txt += '<button type="button" class="add_new add_dna_form">Add same Nucleotide - Original</button>' + "\n";
+					txt += '<button type="button" class="add_new add_aa_form_full">Add same AA</button>' + "\n";
+					txt += '<button type="button" class="add_new add_dna_form_full">Add same Nucleotide</button>' + "\n";
 					txt += "</div>\n";
 					
 					$(this).replaceWith(txt);
@@ -1075,7 +1086,9 @@ $(document).ready(function () {
 			dataType: "text",
 			success: function(data) {
 				if (data > 0) {
-					$(this).remove();
+					$(this).slideUp( "slow", function() {
+						$(this).remove();
+					});
 				}
 				else {
 					alert("Could not delete paper mutation");
@@ -1088,7 +1101,7 @@ $(document).ready(function () {
 	});	//end submit
 });	//end ready
 
-// Add similar AA form
+// Add similar AA form (only original)
 $(document).ready(function () {
 	$(document).on("click", "button.add_aa_form", function (event) {
 		
@@ -1117,8 +1130,8 @@ $(document).ready(function () {
 			success: function(data) {
 				$(this).append(data);
 				
-				$(this).children("form.block_input").last().find("select.select_mutation_aa").hide("fade");
-				$(this).children("form.block_input").last().find("select.select_mutation_dna").hide("fade");
+				$(this).children("form.block_input").last().find(".select_mutation_aa").hide("fade");
+				$(this).children("form.block_input").last().find(".select_mutation_dna").hide("fade");
 				
 				//Activate chosen
 				$(this).find("select").chosen({	//Activate chosen on the select tag
@@ -1148,7 +1161,75 @@ $(document).ready(function () {
 	});	//end submit
 });	//end ready
 
-// Add similar Nucleotide form
+// Add similar AA form - full (with original and substituted)
+$(document).ready(function () {
+	$(document).on("click", "button.add_aa_form_full", function (event) {
+		
+		var loc = $(this).siblings("p").children("span.mut_aa_location").html();
+		var ori = $(this).siblings("span.mut_aa_ori").html();
+		var ori_name = $(this).siblings("p").children("span.mut_aa_ori_name").html();
+		
+		var sub = $(this).siblings("span.mut_aa_sub").html();
+		var sub_name = $(this).siblings("p").children("span.mut_aa_sub_name").html();
+		
+		var array = $(this).parent().parent().siblings("form.form_paper_mutation_group").serializeArray();
+		var expt_id = array[0].value;
+		var dg_id = array[1].value;
+		var region_id = "";
+		if (array.length == 3) {	//If paper_region is added
+			region_id = array[2].value;
+		}
+		
+		$.ajax({
+			url: "includes/form_paper_mutation.php",
+			context: $(this).parent().parent(),
+			data: {
+				expt_id: expt_id,
+				dg_id: dg_id,
+				region_id: region_id
+			},
+			type: "GET",
+			dataType: "html",
+			success: function(data) {
+				$(this).append(data);
+				
+				$(this).children("form.block_input").last().find(".select_mutation_aa").hide("fade");
+				$(this).children("form.block_input").last().find(".select_mutation_dna").hide("fade");
+				
+				//Activate chosen
+				$(this).find("select").chosen({	//Activate chosen on the select tag
+					disable_search_threshold: 5,
+					width: '200px',
+					inherit_select_classes: true
+				});
+				
+				$(this).children("form.block_input").last().find("input.paper_mutation_aa-location").val(loc);	//To enter the location of aa
+				$(this).children("form.block_input").last().find("input.paper_mutation_aa-location").prop('readonly', true);
+				
+				$(this).children("form.block_input").last().find("select.paper_mutation_aa-original").val(ori);	//To enter original aa
+				$(this).children("form.block_input").last().find("div.paper_mutation_aa-original").empty();
+				var out = '<span class="bold">Original: </span><span>' + ori_name + ' </span><img src="images/tick1.png" alt="Left" height="8" width="10">'
+				$(this).children("form.block_input").last().find("div.paper_mutation_aa-original").html(out);
+				
+				$(this).children("form.block_input").last().find("select.paper_mutation_aa-substituted").val(sub);	//To enter substituted aa
+				$(this).children("form.block_input").last().find("div.paper_mutation_aa-substituted").empty();
+				var out = '<span class="bold">Substituted: </span><span>' + sub_name + ' </span><img src="images/tick1.png" alt="Left" height="8" width="10">'
+				$(this).children("form.block_input").last().find("div.paper_mutation_aa-substituted").html(out);
+				
+				//Check if central MIC is set, if yes then set the MIC value
+				if ( $(this).siblings("form.form_paper_mutation_group").children("input.common_mic").val() )  {
+					$(this).find("input.paper_mutation_mic").val( $(this).siblings("form.form_paper_mutation_group").children("input.common_mic").val() );
+				}
+				
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+	});	//end submit
+});	//end ready
+
+// Add similar Nucleotide form (only Original)
 $(document).ready(function () {
 	$(document).on("click", "button.add_dna_form", function (event) {
 		
@@ -1175,6 +1256,9 @@ $(document).ready(function () {
 			dataType: "html",
 			success: function(data) {
 				$(this).append(data);
+				
+				$(this).children("form.block_input").last().find(".select_mutation_aa").hide("fade");
+				$(this).children("form.block_input").last().find(".select_mutation_dna").hide("fade");
 				
 				//Activate chosen
 				$(this).find("select").chosen({	//Activate chosen on the select tag
@@ -1203,6 +1287,69 @@ $(document).ready(function () {
 	});	//end submit
 });	//end ready
 
+// Add similar Nucleotide form full (Original + Substituted)
+$(document).ready(function () {
+	$(document).on("click", "button.add_dna_form_full", function (event) {
+		
+		var loc = $(this).siblings("p").children("span.mut_dna_location").html();
+		var ori = $(this).siblings("p").children("span.mut_dna_ori").html();
+		var sub = $(this).siblings("p").children("span.mut_dna_sub").html();
+		
+		var array = $(this).parent().parent().siblings("form.form_paper_mutation_group").serializeArray();
+		var expt_id = array[0].value;
+		var dg_id = array[1].value;
+		var region_id = "";
+		if (array.length == 3) {	//If paper_region is added
+			region_id = array[2].value;
+		}
+		
+		$.ajax({
+			url: "includes/form_paper_mutation.php",
+			context: $(this).parent().parent(),
+			data: {
+				expt_id: expt_id,
+				dg_id: dg_id,
+				region_id: region_id
+			},
+			type: "GET",
+			dataType: "html",
+			success: function(data) {
+				$(this).append(data);
+				
+				$(this).children("form.block_input").last().find(".select_mutation_aa").hide("fade");
+				$(this).children("form.block_input").last().find(".select_mutation_dna").hide("fade");
+				
+				//Activate chosen
+				$(this).find("select").chosen({	//Activate chosen on the select tag
+					disable_search_threshold: 5,
+					width: '200px',
+					inherit_select_classes: true
+				});
+				
+				$(this).children("form.block_input").last().find("input.paper_mutation_nucleotide-location").val(loc);	//To enter the location of aa
+				$(this).children("form.block_input").last().find("input.paper_mutation_nucleotide-location").prop('readonly', true);
+				
+				$(this).children("form.block_input").last().find("select.paper_mutation_nucleotide-original").val(ori);	//To enter original aa
+				$(this).children("form.block_input").last().find("div.paper_mutation_nucleotide-original").empty();
+				var out = '<span class="bold">Original: </span><span>' + ori + ' </span><img src="images/tick1.png" alt="Left" height="8" width="10">';
+				$(this).children("form.block_input").last().find("div.paper_mutation_nucleotide-original").html(out);
+				
+				$(this).children("form.block_input").last().find("select.paper_mutation_nucleotide-substituted").val(sub);	//To enter substituted aa
+				$(this).children("form.block_input").last().find("div.paper_mutation_nucleotide-substituted").empty();
+				var out = '<span class="bold">Substituted: </span><span>' + sub + ' </span><img src="images/tick1.png" alt="Left" height="8" width="10">';
+				$(this).children("form.block_input").last().find("div.paper_mutation_nucleotide-substituted").html(out);
+				
+				//Check if central MIC is set, if yes then set the MIC value
+				if ( $(this).siblings("form.form_paper_mutation_group").children("input.common_mic").val() )  {
+					$(this).find("input.paper_mutation_mic").val( $(this).siblings("form.form_paper_mutation_group").children("input.common_mic").val() );
+				}
+			},
+			error: function(xhr, status, errorThrown) {
+				alert(errorThrown);
+			}
+		});	//end ajax
+	});	//end submit
+});	//end ready
 
 // On choosing mutation from select AA mutation selectbox
 $(document).ready(function () {
