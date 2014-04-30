@@ -28,7 +28,7 @@ $sequence = $seqIO->next_seq();
 $search_gene = $ARGV[0];
 
 $check = 0;
-$error = "Error";
+$error = "Error - Could not find the gene";
 
 #	get_tag_values() function returns array
 #	get_SeqFeatures() function returns array

@@ -220,6 +220,7 @@ $(document).ready(function () {
 						}
 						else {
 							alert(data);
+							$("#circularG").hide("fade");	//To stop the processing animation
 						}
 					},
 					error: function(xhr, status, errorThrown) {
@@ -249,9 +250,8 @@ $(document).ready(function () {
 });	//end ready
 /*===========================================================================================================================================================*/
 
-/*
- *	Feature - Add Drug	------------------------------------------------------------------------
- */
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------- 	Drug
+-------------------------------------------------------------------------------------------------------------------------------------------------------------*/
  
 //Script to add drug to the database - JQuery UI Dialog Form
 $(document).ready(function () {
@@ -306,6 +306,7 @@ $(document).ready(function () {
 		$( "#add_drug" ).dialog( "open" );
 	});
 });	//end ready
+/*===========================================================================================================================================================*/
  
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------- 	Drug-Gene
 -------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -726,7 +727,7 @@ $(document).ready(function () {
 	Paper Mutations 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-//Modal - Choose mutation group or known mutation
+// Modal - Choose mutation group or known mutation
 $(document).ready(function () {
 
 	$( "#mutation_group_choice" ).dialog({
@@ -1204,8 +1205,8 @@ $(document).ready(function () {
 			dataType: "json",
 			success: function(data) {
 				if (data[0] == true) {
-					var ori_aa = $(this).find('select#reference_aa_list option[value="' + data[8] + '"]').text();
-					var sub_aa = $(this).find('select#reference_aa_list option[value="' + data[9] + '"]').text();
+					var ori_aa = $('select#reference_aa_list option[value="' + data[8] + '"]').text();
+					var sub_aa = $('select#reference_aa_list option[value="' + data[9] + '"]').text();
 					
 					var txt = "<div class=\"mut_data\">\n";
 					txt += '<span style="display: none;" class="mut_pdg_id">' + data[2] + '</span>' + "\n";
@@ -1221,7 +1222,7 @@ $(document).ready(function () {
 					txt += "<h3>Nucleotide</h3>\n";
 					txt += "<p>Location = <span class=\"mut_dna_location\">" + data[12] + "</span>, Original = <span class=\"mut_dna_ori\">" + data[13] + "</span>, Substituted = <span class=\"mut_dna_sub\">" + data[14] + "</span></p>\n<button class=\"close_mut_form\" type=\"button\"><img src=\"images/cross-16.png\"></button>\n";
 					
-					if ($(this).parent("div.known_mutation_details").length == ) {
+					if ($(this).parent("div.known_mutation_details").length == 0) {
 						txt += '<button type="button" class="add_new add_aa_form">Add same AA - Original</button>' + "\n";
 						txt += '<button type="button" class="add_new add_dna_form">Add same Nucleotide - Original</button>' + "\n";
 						txt += '<button type="button" class="add_new add_aa_form_full">Add same AA</button>' + "\n";
@@ -1233,7 +1234,26 @@ $(document).ready(function () {
 					
 				}
 				else {
-					alert (data[1]);
+					// If multiple substituted codons are found - Open a modal with select box to choose codon and then add it to the form
+					if (data[1] == 0) {
+						var array_codon = data[2];
+						var html = '<option value=""></option>';
+						for (var i=0; i<array_codon.length; i++) {
+							html += '<option value="' + array_codon[i] + '">' + array_codon[i] + '</option>';
+						}
+						$("#select_multi_codons").html(html);
+						$("#select_multi_codons").chosen({	//Activate chosen on the select tag
+							disable_search_threshold: 5,
+							width: "100px"
+						});	
+						
+						//load modal
+						$( "#div_multi_codons" ).data('obj', $(this)).dialog( "open" );
+						
+					}
+					else {
+						alert (data[1]);
+					}
 				}
 			},
 			error: function(xhr, status, errorThrown) {
@@ -1322,6 +1342,7 @@ $(document).ready(function () {
 			success: function(data) {
 				$(this).append(data);
 				
+				console.log($(this).children("form.block_input").last().find(".select_mutation_aa").length);	//DEBUG
 				$(this).children("form.block_input").last().find(".select_mutation_aa").hide("fade");
 				$(this).children("form.block_input").last().find(".select_mutation_dna").hide("fade");
 				
@@ -1601,5 +1622,36 @@ $(document).ready(function () {
 		$(this).parent().parent().find("div.paper_mutation_nucleotide-substituted").html(out);
 		
 	});	//end submit
+});	//end ready
+
+// Modal - Multiple codons
+$(document).ready(function () {
+
+	$( "#div_multi_codons" ).dialog({
+		autoOpen: false,
+		height: 250,
+		width: 300,
+		modal: true,
+		dialogClass: "no-close",
+		buttons: {
+			"Choose": function() {
+				var codon = $("#select_multi_codons").val();
+				
+				if (codon) {
+					$(this).data('obj').find("input.paper_mutation_codon-substituted").val(codon);
+					$( this ).dialog( "close" );
+				}
+				else {
+					alert("Please choose a codon");
+				}
+			},
+			
+			Cancel: function() {
+				$( this ).dialog( "close" );
+			}
+		},
+		close: function() {
+		}
+    });
 });	//end ready
 /*===========================================================================================================================================================*/

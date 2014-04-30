@@ -264,7 +264,7 @@ label {
 	background-color: rgba(200,200,200,0.5);
 }
 
-#add_buttons div{
+#add_buttons > div{
 	color: #444444;
     font-size: 1.2em;
     font-weight: bold;

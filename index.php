@@ -204,6 +204,13 @@
 			<option value="X">Unknown (Xaa) [X]</option>
 		</select>
 		
+		<div id="div_multi_codons" title="Multiple codons : Choose one">
+			<p style="font-size: 1.1em; margin: 10px;">Detected multiple substituted codons for your amino acid selection.<br />Please, choose one.</p>
+			<br />
+			<select class="indent" id="select_multi_codons" style="display: none;" data-placeholder="Codon">
+			</select>
+		</div>
+		
 	</div>
 </body>
 

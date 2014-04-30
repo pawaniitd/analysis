@@ -393,6 +393,7 @@
 			}
 		
 			$check = true;
+			$check_multi_subs = true;
 			$error = "";
 			
 			$expt_id = $_GET['paper_experiment_id'];	//Required
@@ -492,6 +493,8 @@
 						
 						$compare = false;
 						
+						$c_subs = array();
+						
 						foreach ($result as $x) {
 							$y = $x['seq'];
 							$count = 0;
@@ -501,15 +504,24 @@
 								}
 							}
 							if ($count == 2) {
-								$codon_substituted = $y;	//VALUE
+								//$codon_substituted = $y;	//VALUE
 								$compare = true;
-								break;
+								$c_subs[] = $y;
 							}
 						}
 						
 						if(!$compare) {	//checks if codon_substituted with single mutation wrt original codon exists
 							$check = false;
 							$error = "Original codon and final codon do not have single mutation.";
+						}
+						
+						if (sizeof($c_subs) == 1) {
+							$codon_substituted = $c_subs[0];	//VALUE
+						}
+						else {
+							$check = false;
+							$check_multi_subs = false;
+							$error = $c_subs;
 						}
 					}
 					
@@ -657,8 +669,12 @@
 				
 				echo json_encode($array);
 			}
+			elseif ($check_multi_subs) {
+				$array = array(false, 1, $error);
+				echo json_encode($array);
+			}
 			else {
-				$array = array(false, $error);
+				$array = array(false, 0, $error);
 				echo json_encode($array);
 			}
 		}
