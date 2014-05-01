@@ -32,6 +32,10 @@
 	</select>
 	<label for="paper_drug-gene_isolates">Isolates</label>
 	<input id="paper_drug-gene_isolates" name="paper_drug-gene_isolates" type="number" required/>
+	<label for="paper_drug-gene_sus_conc">Susceptibility: Conc.</label>
+	<input id="paper_drug-gene_sus_conc" name="paper_drug-gene_sus_conc" type="number"/>
+	<label for="paper_drug-gene_sus_expt">Susceptibility: Expt(s)</label>
+	<input id="paper_drug-gene_sus_expt" name="paper_drug-gene_sus_expt" type="text"/>
 	<button type="submit">Submit</button>
 	<button type="button" class="cancel_button">Cancel</button>
 </form>

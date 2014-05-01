@@ -316,13 +316,25 @@
 			$pmid = $_GET['paper_drug-gene_pmid'];
 			$drug_gene_id = $_GET['paper_drug-gene_id'];
 			$isolates = $_GET['paper_drug-gene_isolates'];
+			$sus_conc = $_GET['paper_drug-gene_sus_conc'];
+			$sus_expt = $_GET['paper_drug-gene_sus_expt'];
+			
+			if (empty($sus_conc)) {
+				$sus_conc = null;
+			}
+			
+			if (empty($sus_expt)) {
+				$sus_expt = null;
+			}
 			
 			try {
-			$sql = "INSERT INTO paper_drug_gene (pmid, drug_gene_id, isolates) VALUES (:p, :dg, :i)";
+			$sql = "INSERT INTO paper_drug_gene (pmid, drug_gene_id, isolates, sus_conc, sus_expt) VALUES (:p, :dg, :i, :sc, :se)";
 			$q = $conn -> prepare($sql);
 			$q->bindParam(':p', $pmid);
 			$q->bindParam(':dg', $drug_gene_id);
 			$q->bindParam(':i', $isolates);
+			$q->bindParam(':sc', $sus_conc);
+			$q->bindParam(':se', $sus_expt);
 			$q->execute();
 			}
 			catch (PDOException $e) {
@@ -337,7 +349,7 @@
 			
 			
 			
-			$out_text = '<p class="pdg_info close"><span class="bold">Id :</span> <span class="pdg_dgid" style="display:none;">' . $drug_gene_id . '</span>' . $result['drug_name'] . '-' . $result['gene_name'] . '</span> and <span class="bold">Isolates :</span> <span class="pdg_isolates">' . $isolates . '</span><button type="button"><img src="images/cross-16.png"></button></p>';
+			$out_text = '<p class="pdg_info close"><span class="bold">Id :</span> <span class="pdg_dgid" style="display:none;">' . $drug_gene_id . '</span>' . $result['drug_name'] . '-' . $result['gene_name'] . '</span> || <span class="bold">Isolates :</span> <span class="pdg_isolates">' . $isolates . '</span> || <span class="bold">Susceptibility Conc. :</span> <span class="pdg_sus_conc">' . $sus_conc . '</span> || <span class="bold">Susceptibility Expt. :</span> <span class="pdg_sus_expt">' . $sus_expt . '</span><button type="button"><img src="images/cross-16.png"></button></p>';
 			echo $out_text;
 		}
 		

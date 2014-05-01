@@ -1252,7 +1252,7 @@ $(document).ready(function () {
 						
 					}
 					else {
-						alert (data[1]);
+						alert (data[2]);
 					}
 				}
 			},
@@ -1601,7 +1601,7 @@ $(document).ready(function () {
 
 // On choosing mutation from select Nucleotide mutation selectbox
 $(document).ready(function () {
-	$(document).on("change", "form.block_input select.select_mutation_nucleotide", function (event) {
+	$(document).on("change", "form.block_input select.select_mutation_dna", function (event) {
 		var text = $(this).val();
 		var array = text.split(":");
 		
