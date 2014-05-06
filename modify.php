@@ -117,7 +117,23 @@
 		//To add gene to database - By executing Perl script
 		if ($_GET['q'] == "add_gene") {
 			$name = $_GET['gene_name'];
-			echo shell_exec("perl programs/Bioperl/getGene_genbank.pl $name");
+			
+			$name .= '%';
+			
+			$sql = "SELECT id FROM h37rv_genes WHERE name ILIKE ?";
+			$q = $conn -> prepare($sql);
+			$q->bindParam(1, $name);
+			$q->execute();
+			
+			$result = $q->fetch(PDO::FETCH_ASSOC);
+			if ($result) {
+				echo "Gene already in database - " . $result['id'];
+			}
+			else {
+				echo shell_exec("perl programs/Bioperl/getGene_genbank.pl $name");
+			}
+			
+			
 		}
 		
 		//To add drug to database
@@ -195,28 +211,42 @@
 			$drug_id = $_GET['drug_name'];
 			$gene_id = $_GET['gene_name'];
 			
-			$sql = "INSERT INTO drug_gene (drug_id, gene_id) VALUES (:did, :gid)";
-			$q = $conn -> prepare($sql);
-			$q->bindParam(':did', $drug_id);
-			$q->bindParam(':gid', $gene_id);
-			$q->execute();
-			
 			$sql = "SELECT id FROM drug_gene WHERE drug_id=:did and gene_id=:gid";
 			$q = $conn -> prepare($sql);
 			$q->bindParam(':did', $drug_id);
 			$q->bindParam(':gid', $gene_id);
 			$q->execute();
 			$result = $q->fetch(PDO::FETCH_ASSOC);
-			$dg_id = $result['id'];
 			
-			$sql = "SELECT * FROM view_drug_gene WHERE id=:dgid";
-			$q = $conn -> prepare($sql);
-			$q->bindParam(':dgid', $dg_id);
-			$q->execute();
-			$x = $q->fetch(PDO::FETCH_ASSOC);
-			
-			$data = '<option value="' . $x['id'] . '">' . trim($x['drug_name']) . ' and ' . trim($x['gene_name']) . '</option>' . "\n";
-			file_put_contents ($file_drug_gene, $data, FILE_APPEND);	//Update the file with drug-gene options
+			if ($result) {
+				echo "Error";
+			}
+			else {
+				$sql = "INSERT INTO drug_gene (drug_id, gene_id) VALUES (:did, :gid)";
+				$q = $conn -> prepare($sql);
+				$q->bindParam(':did', $drug_id);
+				$q->bindParam(':gid', $gene_id);
+				$q->execute();
+				
+				$sql = "SELECT id FROM drug_gene WHERE drug_id=:did and gene_id=:gid";
+				$q = $conn -> prepare($sql);
+				$q->bindParam(':did', $drug_id);
+				$q->bindParam(':gid', $gene_id);
+				$q->execute();
+				$result = $q->fetch(PDO::FETCH_ASSOC);
+				$dg_id = $result['id'];
+				
+				$sql = "SELECT * FROM view_drug_gene WHERE id=:dgid";
+				$q = $conn -> prepare($sql);
+				$q->bindParam(':dgid', $dg_id);
+				$q->execute();
+				$x = $q->fetch(PDO::FETCH_ASSOC);
+				
+				$data = '<option value="' . $x['id'] . '">' . trim($x['drug_name']) . ' and ' . trim($x['gene_name']) . '</option>' . "\n";
+				file_put_contents ($file_drug_gene, $data, FILE_APPEND);	//Update the file with drug-gene options
+				
+				echo "Success";
+			}
 		}
 		
 		
@@ -360,29 +390,57 @@
 			$pdg_id = $_GET['pdg_id'];
 			$amino_acid = $_GET['amino_acid'];
 			
+			$check = false;
+			$error = '';
+			$codon_original = null;
+			
 			try {
-				$sql = "SELECT protein_seq FROM h37rv_genes WHERE name IN (SELECT gene_name FROM view_paper_drug_gene WHERE id=:id)";
+				$sql = "SELECT seq, protein_seq FROM h37rv_genes WHERE name IN (SELECT gene_name FROM view_paper_drug_gene WHERE id=:id)";
 				$q = $conn -> prepare($sql);
 				$q->bindParam(':id', $pdg_id);
 				$q->execute();
 				
 				$result = $q->fetch(PDO::FETCH_ASSOC);
 				
-				$seq = $result['protein_seq'];
+				$protein_seq = $result['protein_seq'];
 				
-				$aa = substr($seq, ($location-1), 1);
+				$aa = substr($protein_seq, ($location-1), 1);
 				
 				if ($amino_acid == $aa) {
-					echo "yes";
+					$check = true;
+					
+					$dna_location = 3*($location - 1);
+					$seq = $result['seq'];
+					$codon = substr($seq, $dna_location, 3);
+					
+					if ($aa == (codonTOaa ($conn, $codon))) {
+						$codon_original = $codon;	//VALUE
+					}
+					else {
+						$check = false;
+						$error = "Incorrect codon for Original Amino Acid";
+					}
 				}
 				else {
-					echo "no";
+					$check = false;
+					$error = "Amino Acid in that location did not match!";
 				}
 			}
 			catch (PDOException $e) {
 				//Do your error handling here
 				echo $e->getMessage();
 			}
+			
+			if ($check) {
+				$array = array('yes', $codon_original);
+				echo json_encode($array);
+			}
+			else {
+				$array = array('no', $error);
+				echo json_encode($array);
+			}
+			
+			
 		}
 		
 		
@@ -448,20 +506,30 @@
 			
 			//From valitation - ISOLATES
 			if (!empty($per_isolates) || !empty($isolates)) {
-			
-				//check isolates and percent isolates
-				$sql = "SELECT isolates FROM paper_drug_gene WHERE id=:pdg";
-				$q = $conn -> prepare($sql);
-				$q->bindParam(':pdg', $pdg_id);
-				$q->execute();
-				$result = $q->fetch(PDO::FETCH_ASSOC);
 				
-				$tot_isolates = $result['isolates'];
-				if (empty($isolates) && !empty($per_isolates)) {
-					$isolates = round(($per_isolates*$tot_isolates)/100);	//VALUE
+				if (!is_numeric($isolates) && !empty($isolates)) {
+					$check = false;
+					$error = "Isolates should be numeric";
 				}
-				if (!empty($isolates) && empty($per_isolates)) {
-					$per_isolates = round(($isolates*100)/$tot_isolates);	//VALUE
+				elseif (!is_numeric($per_isolates) && !empty($per_isolates)) {
+					$check = false;
+					$error = "Percent isolates should be numeric";
+				}
+				else {
+					//check isolates and percent isolates
+					$sql = "SELECT isolates FROM paper_drug_gene WHERE id=:pdg";
+					$q = $conn -> prepare($sql);
+					$q->bindParam(':pdg', $pdg_id);
+					$q->execute();
+					$result = $q->fetch(PDO::FETCH_ASSOC);
+					
+					$tot_isolates = $result['isolates'];
+					if (empty($isolates) && !empty($per_isolates)) {
+						$isolates = round(($per_isolates*$tot_isolates)/100);	//VALUE
+					}
+					if (!empty($isolates) && empty($per_isolates)) {
+						$per_isolates = round(($isolates*100)/$tot_isolates);	//VALUE
+					}
 				}
 				
 				//amino acid deatials are entered
@@ -530,11 +598,16 @@
 						if (sizeof($c_subs) == 1) {
 							$codon_substituted = $c_subs[0];	//VALUE
 						}
-						else {
+						elseif (sizeof($c_subs) > 1) {
 							$check = false;
 							$check_multi_subs = false;
 							$error = $c_subs;
 						}
+						else {
+							$check = false;
+							$error = "Original codon and final codon do not have single mutation.";
+						}
+						
 					}
 					
 					//Nucleotide

@@ -328,7 +328,12 @@ $(document).ready(function () {
 					type: "GET",
 					dataType: "text",
 					success: function(data) {
-						$("#add_drug-gene_button img").show("fade").delay(5000).hide("fade");	//To show tick mark for 5 sec upon success
+						if (data = "Success") {
+							$("#add_drug-gene_button img").show("fade").delay(5000).hide("fade");	//To show tick mark for 5 sec upon success
+						}
+						else {
+							alert("Drug-Gene already exists");
+						}
 					},
 					error: function(xhr, status, errorThrown) {
 						alert(errorThrown);
@@ -847,12 +852,13 @@ $(document).ready(function () {
 $(document).ready(function () {
 	$(document).on("click", "button.minimize_mut_group", function () {
 		$(this).siblings("div").slideToggle();
+		$(this).siblings("button").toggle("fade");
 	});	//end click
 });	//end ready
 
 // Close mutation group upon pressing the Close Group button
 $(document).ready(function () {
-	$(document).on("click", ".paper_mutation_group > button.close_mut_group", function () {
+	$(document).on("click", "button.close_mut_group", function () {
 		if ( !$.trim( $(this).siblings("div").html() ).length ) {
 			$(this).parent().remove();
 		}
@@ -1110,17 +1116,29 @@ $(document).ready(function () {
 					amino_acid: aa
 				},
 				type: "GET",
-				dataType: "text",
+				dataType: "json",
 				success: function(data) {
-					if (data == "yes") {
+					if (data[0] == "yes") {
+						//set the original amino acid value and make it non editable
 						var txt = $(this).children("option:selected").text();
 						$(this).siblings("div.paper_mutation_aa-original").empty();
 						var out = '<span class="bold">Original: </span><span>' + txt + ' </span><img src="images/tick1.png" alt="Left" height="8" width="10">'
 						$(this).siblings("div.paper_mutation_aa-original").html(out);
+						
+						//set the original codon value and make it non editable
+						$(this).siblings("input.paper_mutation_codon-original").val(data[1]);
+						$(this).siblings("input.paper_mutation_codon-original").prop('readonly', true);
+						$(this).siblings("input.paper_mutation_codon-original").css({
+							"background-image": "url('images/tick1.png')",
+							"background-repeat": "no-repeat",
+							"background-position": "left center",
+							"padding-left": "11px"
+						});
+						
 					}
 					else {
 						if (check) {
-							alert("Amino Acid in that location did not match!");
+							alert(data[1]);
 						}
 						check = false;
 						$('select.paper_mutation_aa-original').val('').trigger('chosen:updated');
@@ -1242,11 +1260,13 @@ $(document).ready(function () {
 							html += '<option value="' + array_codon[i] + '">' + array_codon[i] + '</option>';
 						}
 						$("#select_multi_codons").html(html);
+						
 						$("#select_multi_codons").chosen({	//Activate chosen on the select tag
 							disable_search_threshold: 5,
 							width: "100px"
 						});	
 						
+						$("#select_multi_codons").trigger('chosen:updated');
 						//load modal
 						$( "#div_multi_codons" ).data('obj', $(this)).dialog( "open" );
 						
@@ -1342,9 +1362,8 @@ $(document).ready(function () {
 			success: function(data) {
 				$(this).append(data);
 				
-				console.log($(this).children("form.block_input").last().find(".select_mutation_aa").length);	//DEBUG
-				$(this).children("form.block_input").last().find(".select_mutation_aa").hide("fade");
-				$(this).children("form.block_input").last().find(".select_mutation_dna").hide("fade");
+				$(this).children("form.block_input").last().find("select.select_mutation_aa").remove();
+				$(this).children("form.block_input").last().find("select.select_mutation_dna").remove();
 				
 				//Activate chosen
 				$(this).find("select").chosen({	//Activate chosen on the select tag
@@ -1406,8 +1425,8 @@ $(document).ready(function () {
 			success: function(data) {
 				$(this).append(data);
 				
-				$(this).children("form.block_input").last().find(".select_mutation_aa").hide("fade");
-				$(this).children("form.block_input").last().find(".select_mutation_dna").hide("fade");
+				$(this).children("form.block_input").last().find(".select_mutation_aa").remove();
+				$(this).children("form.block_input").last().find(".select_mutation_dna").remove();
 				
 				//Activate chosen
 				$(this).find("select").chosen({	//Activate chosen on the select tag
@@ -1470,8 +1489,8 @@ $(document).ready(function () {
 			success: function(data) {
 				$(this).append(data);
 				
-				$(this).children("form.block_input").last().find(".select_mutation_aa").hide("fade");
-				$(this).children("form.block_input").last().find(".select_mutation_dna").hide("fade");
+				$(this).children("form.block_input").last().find(".select_mutation_aa").remove();
+				$(this).children("form.block_input").last().find(".select_mutation_dna").remove();
 				
 				//Activate chosen
 				$(this).find("select").chosen({	//Activate chosen on the select tag
@@ -1529,8 +1548,8 @@ $(document).ready(function () {
 			success: function(data) {
 				$(this).append(data);
 				
-				$(this).children("form.block_input").last().find(".select_mutation_aa").hide("fade");
-				$(this).children("form.block_input").last().find(".select_mutation_dna").hide("fade");
+				$(this).children("form.block_input").last().find(".select_mutation_aa").remove();
+				$(this).children("form.block_input").last().find(".select_mutation_dna").remove();
 				
 				//Activate chosen
 				$(this).find("select").chosen({	//Activate chosen on the select tag

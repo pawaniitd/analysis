@@ -521,6 +521,10 @@ div.paper_mutation_known div.known_mut_holder div.select_known_mutation {
     padding: 10px;
 }
 
+#mutation_forms div.known_mutation_details div.mut_data button.close_mut_form {
+	top: -150px;
+}
+
 
 
 
