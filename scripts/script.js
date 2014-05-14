@@ -328,7 +328,7 @@ $(document).ready(function () {
 					type: "GET",
 					dataType: "text",
 					success: function(data) {
-						if (data = "Success") {
+						if (data == "Success") {
 							$("#add_drug-gene_button img").show("fade").delay(5000).hide("fade");	//To show tick mark for 5 sec upon success
 						}
 						else {

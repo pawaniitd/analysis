@@ -118,11 +118,11 @@
 		if ($_GET['q'] == "add_gene") {
 			$name = $_GET['gene_name'];
 			
-			$name .= '%';
+			$name_mod = $name . '%';
 			
 			$sql = "SELECT id FROM h37rv_genes WHERE name ILIKE ?";
 			$q = $conn -> prepare($sql);
-			$q->bindParam(1, $name);
+			$q->bindParam(1, $name_mod);
 			$q->execute();
 			
 			$result = $q->fetch(PDO::FETCH_ASSOC);
@@ -190,7 +190,7 @@
 		//To get list of existing tags
 		if ($_GET['q'] == "tags") {
 			$table = 'tags';
-			$sql = "SELECT DISTINCT tag FROM $table";
+			$sql = "SELECT DISTINCT tag FROM $table ORDER BY tag";
 			
 			try {
 				$q = $conn -> prepare($sql);
@@ -625,56 +625,67 @@
 				// Only Nucleotide details are entered and the gene product is protein
 				elseif (empty($aa_location) && !empty($dna_location) && $protein_check) {
 				
-					$within_codon = $dna_location % 3;
-					if ($within_codon == 0) {
-						$within_codon = 3;
-					}
-					$aa_loc = (($dna_location - $within_codon)/3) + 1;
-					$codon_loc = ($dna_location - $within_codon) + 1;
-					
-					$sql = "SELECT seq, protein_seq FROM h37rv_genes WHERE name IN (SELECT gene_name FROM view_paper_drug_gene WHERE id=:id)";
-					$q = $conn -> prepare($sql);
-					$q->bindParam(':id', $pdg_id);
-					$q->execute();
-					
-					$result = $q->fetch(PDO::FETCH_ASSOC);
-		
-					$seq = $result['seq'];
-					$protein_seq = $result['protein_seq'];
-					
-					if ($seq[($dna_location-1)] == $dna_original) {
-					
-						$codon = substr($seq, ($codon_loc - 1), 3);
-						$aa = $protein_seq[($aa_loc - 1)];
+					if ($dna_location > 0) {
+				
+						$within_codon = $dna_location % 3;
+						if ($within_codon == 0) {
+							$within_codon = 3;
+						}
+						$aa_loc = (($dna_location - $within_codon)/3) + 1;
+						$codon_loc = ($dna_location - $within_codon) + 1;
 						
-						if ($aa == (codonTOaa ($conn, $codon))) {
-							$aa_location = $aa_loc;	//VALUE
-							$aa_original = $aa;	//VALUE
-							$codon_original = $codon;	//VALUE
+						$sql = "SELECT seq, protein_seq FROM h37rv_genes WHERE name IN (SELECT gene_name FROM view_paper_drug_gene WHERE id=:id)";
+						$q = $conn -> prepare($sql);
+						$q->bindParam(':id', $pdg_id);
+						$q->execute();
+						
+						$result = $q->fetch(PDO::FETCH_ASSOC);
+			
+						$seq = $result['seq'];
+						$protein_seq = $result['protein_seq'];
+						
+						if ($seq[($dna_location-1)] == $dna_original) {
+						
+							$codon = substr($seq, ($codon_loc - 1), 3);
+							$aa = $protein_seq[($aa_loc - 1)];
 							
-							if (!empty ($dna_substituted)) {
-							
-								if ($dna_original == $dna_substituted) {
-									$check = false;
-									$error = "Same original and substituted nucleotides";
+							if ($aa == (codonTOaa ($conn, $codon))) {
+								$aa_location = $aa_loc;	//VALUE
+								$aa_original = $aa;	//VALUE
+								$codon_original = $codon;	//VALUE
+								
+								if (!empty ($dna_substituted)) {
+								
+									if ($dna_original == $dna_substituted) {
+										$check = false;
+										$error = "Same original and substituted nucleotides";
+									}
+								
+									$codon_substituted = substr_replace($codon_original, $dna_substituted, ($within_codon - 1), 1);	//VALUE
+									$aa_substituted = codonTOaa ($conn, $codon_substituted);	//VALUE
 								}
-							
-								$codon_substituted = substr_replace($codon_original, $dna_substituted, ($within_codon - 1), 1);	//VALUE
-								$aa_substituted = codonTOaa ($conn, $codon_substituted);	//VALUE
+								else {
+									$check = false;
+									$error = "Fill Substituted nucleotide";
+								}
 							}
 							else {
 								$check = false;
-								$error = "Fill Substituted nucleotide";
+								$error = "Codon and Amino acid (Origional) do not match";
 							}
 						}
 						else {
 							$check = false;
-							$error = "Codon and Amino acid (Origional) do not match";
+							$error = "Incorrect nucleotide at the given location.";
 						}
 					}
+					// For mutations upstream of the gene
 					else {
-						$check = false;
-						$error = "Incorrect nucleotide at the given location.";
+						$aa_location = null;	//VALUE
+						$aa_original = null;	//VALUE
+						$codon_original = null;	//VALUE
+						$codon_substituted = null;	//VALUE
+						$aa_substituted = null;	//VALUE
 					}
 				}
 				

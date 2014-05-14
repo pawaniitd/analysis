@@ -39,7 +39,7 @@
 	<label for="paper_mutation_percent-isolates">Percent Isolates</label>
 	<input class="paper_mutation_percent-isolates" name="paper_mutation_percent-isolates" type="number" />
 	<label for="paper_mutation_mic">MIC</label>
-	<input class="paper_mutation_mic" name="paper_mutation_mic" type="number" />
+	<input class="paper_mutation_mic" name="paper_mutation_mic" type="number" step="0.01"/>
 	
 	<?php
 		if ($bool_region == "yes") {
