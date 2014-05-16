@@ -738,7 +738,7 @@ $(document).ready(function () {
 	$( "#mutation_group_choice" ).dialog({
 		autoOpen: false,
 		height: 100,
-		width: 400,
+		width: 500,
 		modal: true,
 		dialogClass: "no-close",
 		buttons: {
@@ -807,6 +807,80 @@ $(document).ready(function () {
 						
 						$("#paper_mutation_known_" + num).append('<button type="button" class="button_add_known_mutation add_new">Add Known Mutation</button>');
 						$("#paper_mutation_known_" + num).append('<button type="button" class="close_mut_group add_new">Close Group</button>');
+					},
+					error: function(xhr, status, errorThrown) {
+						alert(errorThrown);
+					}
+				});	//end ajax
+
+				$( this ).dialog( "close" );
+			},
+			"Injectable": function() {
+				$.ajax({
+					url: "includes/form_paper_mutation_injectable.php",
+					type: "GET",
+					data: {
+						pmid: $("#current_pmid").html(),
+						expt_id: $("div#paper_mutation").attr("data-experiment_id"),
+						region: $("div#paper_mutation > button").attr("data-paper_region")
+					},
+					dataType: "html",
+					success: function(data) {
+						var num = $("div#paper_mutation div.paper_mutation_injectable").length;
+						num += 1;
+						$("div#paper_mutation > div.forms").append('<div class="paper_mutation_injectable indent" id="paper_mutation_injectable_' + num + '"><h2>Mutation injectable</h2></div>');
+						
+						$("#paper_mutation_injectable_" + num).append('<button type="button" class="minimize_mut_group"><img src="images/minimize-16.png"></button>');
+						$("#paper_mutation_injectable_" + num).append(data);
+						
+						//Activate chosen
+						$("#paper_mutation_injectable_" + num + " form.form_paper_mutation_injectable select").chosen({	//Activate chosen on the select tag
+							disable_search_threshold: 5,
+							width: '250px'
+						});
+						
+						
+						$("#paper_mutation_injectable_" + num).append('<div class="injectable_mut_holder"></div>');
+						
+						$("#paper_mutation_injectable_" + num).append('<button type="button" class="button_add_injectable_mutation add_new">Add Injectable Mutation</button>');
+						$("#paper_mutation_injectable_" + num).append('<button type="button" class="close_mut_group add_new">Close Group</button>');
+					},
+					error: function(xhr, status, errorThrown) {
+						alert(errorThrown);
+					}
+				});	//end ajax
+
+				$( this ).dialog( "close" );
+			},
+			"FQ": function() {
+				$.ajax({
+					url: "includes/form_paper_mutation_fq.php",
+					type: "GET",
+					data: {
+						pmid: $("#current_pmid").html(),
+						expt_id: $("div#paper_mutation").attr("data-experiment_id"),
+						region: $("div#paper_mutation > button").attr("data-paper_region")
+					},
+					dataType: "html",
+					success: function(data) {
+						var num = $("div#paper_mutation div.paper_mutation_fq").length;
+						num += 1;
+						$("div#paper_mutation > div.forms").append('<div class="paper_mutation_fq indent" id="paper_mutation_fq_' + num + '"><h2>Mutation fq</h2></div>');
+						
+						$("#paper_mutation_fq_" + num).append('<button type="button" class="minimize_mut_group"><img src="images/minimize-16.png"></button>');
+						$("#paper_mutation_fq_" + num).append(data);
+						
+						//Activate chosen
+						$("#paper_mutation_fq_" + num + " form.form_paper_mutation_fq select").chosen({	//Activate chosen on the select tag
+							disable_search_threshold: 5,
+							width: '250px'
+						});
+						
+						
+						$("#paper_mutation_fq_" + num).append('<div class="fq_mut_holder"></div>');
+						
+						$("#paper_mutation_fq_" + num).append('<button type="button" class="button_add_fq_mutation add_new">Add fq Mutation</button>');
+						$("#paper_mutation_fq_" + num).append('<button type="button" class="close_mut_group add_new">Close Group</button>');
 					},
 					error: function(xhr, status, errorThrown) {
 						alert(errorThrown);
@@ -1091,6 +1165,297 @@ $(document).ready(function () {
 /*==========================================================================================================================================================*/
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------
+	Injectable Mutation section
+------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+// Add injectable mutation button - to insert new injectable mutation form upon pressing the button
+$(document).ready(function () {
+	$(document).on("click", "button.button_add_injectable_mutation" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
+		
+		var array = $(this).siblings("form.form_paper_mutation_injectable").serializeArray();
+		var expt_id = array[0].value;
+		var gene_id = array[1].value;
+		
+		
+		var check = false;
+		
+		if (gene_id) {	//to check if paper_drug_gene is selected
+			check = true;
+		}
+		else {
+			alert ("Select gene");
+		}
+		
+		if (check) {
+			$.ajax({
+				url: "includes/form_select_injectable_mutation.php",
+				context: $(this).siblings("div.injectable_mut_holder"),
+				data: {
+					gene_id: gene_id
+				},
+				type: "GET",
+				dataType: "html",
+				success: function(data) {
+					$(this).append(data);
+					
+					$(this).find("select.chosen-300").chosen({	//Activate chosen on the select tag
+						disable_search_threshold: 5,
+						width: '350px',
+						inherit_select_classes: true
+					});
+				},
+				error: function(xhr, status, errorThrown) {
+					alert(errorThrown);
+				}
+			});	//end ajax
+		}
+	});	//end click
+});	//end ready
+
+
+// Add injectable mutation details button (button.button_injectable_mutation_details) - to insert new injectable mutation details form upon pressing the button
+$(document).ready(function () {
+	$(document).on("click", "button.button_injectable_mutation_details" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
+		
+		//Get the expt_id and region_id details from form_paper_mutation_injectable
+		var arr = $(this).parent().parent().siblings("form.form_paper_mutation_injectable").serializeArray();
+		var expt_id = arr[0].value;
+		var gene_id = arr[1].value;
+		var region_id = '';
+		if (arr.length > 2) {
+			if (arr[2].value) {
+				region_id = arr[2].value;
+			}
+		}
+		
+		//Get details from about the mutation
+		var array = $(this).siblings("form.form_select_injectable_mutation").serializeArray();
+		var aa = array[0].value;
+		var dna = array[1].value;
+		
+		var check = false;
+		
+		if (aa || dna) {	//to check if mutation is selected
+			check = true;
+		}
+		else {
+			alert ("Select mutation (AA or nucleotide)");
+		}
+		
+		if (check) {
+			$.ajax({
+				url: "includes/form_injectable_mutation_details.php",
+				context: $(this).siblings("div.injectable_mutation_details"),
+				data: {
+					pmid: $("#current_pmid").html(),
+					gene_id: gene_id,
+					expt_id: expt_id,
+					region_id: region_id
+				},
+				type: "GET",
+				dataType: "html",
+				success: function(data) {
+					$(this).append(data);
+					
+					//Activate chosen
+					$(this).find("select.chosen-200").chosen({	//Activate chosen on the select tag
+						disable_search_threshold: 5,
+						width: '200px',
+						inherit_select_classes: true
+					});
+					
+					if (aa) {	//If amino acid mutation was selected
+						var text = $(this).siblings("form.form_select_injectable_mutation").children("select.select_mutation_aa").val();
+						var array = text.split(":");
+						
+						var loc = array[0];
+						var ori = array[1];
+						var sub = array[2];
+						
+						//set the location
+						$(this).children("form.form_injectable_mutation_details").last().find("input.paper_mutation_aa-location").val(loc);
+						
+						//set original
+						$(this).children("form.form_injectable_mutation_details").last().find("input.paper_mutation_aa-original").val(ori);
+						
+						//set substituted
+						$(this).children("form.form_injectable_mutation_details").last().find("input.paper_mutation_aa-substituted").val(sub);
+					}
+					
+					if (dna) {	//If amino acid mutation was selected
+						var text = $(this).siblings("form.form_select_injectable_mutation").children("select.select_mutation_dna").val();
+						var array = text.split(":");
+						
+						var loc = array[0];
+						var ori = array[1];
+						var sub = array[2];
+						
+						//set the location
+						$(this).children("form.form_injectable_mutation_details").last().find("input.paper_mutation_nucleotide-location").val(loc);
+						
+						//set original
+						$(this).children("form.form_injectable_mutation_details").last().find("input.paper_mutation_nucleotide-original").val(ori);
+						
+						//set substituted
+						$(this).children("form.form_injectable_mutation_details").last().find("input.paper_mutation_nucleotide-substituted").val(sub);
+					}
+				},
+				error: function(xhr, status, errorThrown) {
+					alert(errorThrown);
+				}
+			});	//end ajax
+		}
+	});	//end click
+});	//end ready
+/*==========================================================================================================================================================*/
+
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------
+	FQ Mutation section
+------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+// Add fq mutation button - to insert new fq mutation form upon pressing the button
+$(document).ready(function () {
+	$(document).on("click", "button.button_add_fq_mutation" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
+		
+		var array = $(this).siblings("form.form_paper_mutation_fq").serializeArray();
+		var expt_id = array[0].value;
+		var gene_id = array[1].value;
+		
+		
+		var check = false;
+		
+		if (gene_id) {	//to check if paper_drug_gene is selected
+			check = true;
+		}
+		else {
+			alert ("Select gene");
+		}
+		
+		if (check) {
+			$.ajax({
+				url: "includes/form_select_fq_mutation.php",
+				context: $(this).siblings("div.fq_mut_holder"),
+				data: {
+					gene_id: gene_id
+				},
+				type: "GET",
+				dataType: "html",
+				success: function(data) {
+					$(this).append(data);
+					
+					$(this).find("select.chosen-300").chosen({	//Activate chosen on the select tag
+						disable_search_threshold: 5,
+						width: '350px',
+						inherit_select_classes: true
+					});
+				},
+				error: function(xhr, status, errorThrown) {
+					alert(errorThrown);
+				}
+			});	//end ajax
+		}
+	});	//end click
+});	//end ready
+
+
+// Add fq mutation details button (button.button_fq_mutation_details) - to insert new fq mutation details form upon pressing the button
+$(document).ready(function () {
+	$(document).on("click", "button.button_fq_mutation_details" , function () {	//Used '.on()' bcoz the elements added after DOM gets ready need to be attached to an event handler, thus to perform operations on such elements we need this.
+		
+		//Get the expt_id and region_id details from form_paper_mutation_fq
+		var arr = $(this).parent().parent().siblings("form.form_paper_mutation_fq").serializeArray();
+		var expt_id = arr[0].value;
+		var gene_id = arr[1].value;
+		var region_id = '';
+		if (arr.length > 2) {
+			if (arr[2].value) {
+				region_id = arr[2].value;
+			}
+		}
+		
+		//Get details from about the mutation
+		var array = $(this).siblings("form.form_select_fq_mutation").serializeArray();
+		var aa = array[0].value;
+		var dna = array[1].value;
+		
+		var check = false;
+		
+		if (aa || dna) {	//to check if mutation is selected
+			check = true;
+		}
+		else {
+			alert ("Select mutation (AA or nucleotide)");
+		}
+		
+		if (check) {
+			$.ajax({
+				url: "includes/form_fq_mutation_details.php",
+				context: $(this).siblings("div.fq_mutation_details"),
+				data: {
+					pmid: $("#current_pmid").html(),
+					gene_id: gene_id,
+					expt_id: expt_id,
+					region_id: region_id
+				},
+				type: "GET",
+				dataType: "html",
+				success: function(data) {
+					$(this).append(data);
+					
+					//Activate chosen
+					$(this).find("select.chosen-200").chosen({	//Activate chosen on the select tag
+						disable_search_threshold: 5,
+						width: '200px',
+						inherit_select_classes: true
+					});
+					
+					if (aa) {	//If amino acid mutation was selected
+						var text = $(this).siblings("form.form_select_fq_mutation").children("select.select_mutation_aa").val();
+						var array = text.split(":");
+						
+						var loc = array[0];
+						var ori = array[1];
+						var sub = array[2];
+						
+						//set the location
+						$(this).children("form.form_fq_mutation_details").last().find("input.paper_mutation_aa-location").val(loc);
+						
+						//set original
+						$(this).children("form.form_fq_mutation_details").last().find("input.paper_mutation_aa-original").val(ori);
+						
+						//set substituted
+						$(this).children("form.form_fq_mutation_details").last().find("input.paper_mutation_aa-substituted").val(sub);
+					}
+					
+					if (dna) {	//If amino acid mutation was selected
+						var text = $(this).siblings("form.form_select_fq_mutation").children("select.select_mutation_dna").val();
+						var array = text.split(":");
+						
+						var loc = array[0];
+						var ori = array[1];
+						var sub = array[2];
+						
+						//set the location
+						$(this).children("form.form_fq_mutation_details").last().find("input.paper_mutation_nucleotide-location").val(loc);
+						
+						//set original
+						$(this).children("form.form_fq_mutation_details").last().find("input.paper_mutation_nucleotide-original").val(ori);
+						
+						//set substituted
+						$(this).children("form.form_fq_mutation_details").last().find("input.paper_mutation_nucleotide-substituted").val(sub);
+					}
+				},
+				error: function(xhr, status, errorThrown) {
+					alert(errorThrown);
+				}
+			});	//end ajax
+		}
+	});	//end click
+});	//end ready
+/*==========================================================================================================================================================*/
+
+
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------
 	Mutation final form
 ------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -1240,7 +1605,7 @@ $(document).ready(function () {
 					txt += "<h3>Nucleotide</h3>\n";
 					txt += "<p>Location = <span class=\"mut_dna_location\">" + data[12] + "</span>, Original = <span class=\"mut_dna_ori\">" + data[13] + "</span>, Substituted = <span class=\"mut_dna_sub\">" + data[14] + "</span></p>\n<button class=\"close_mut_form\" type=\"button\"><img src=\"images/cross-16.png\"></button>\n";
 					
-					if ($(this).parent("div.known_mutation_details").length == 0) {
+					if ($(this).parent("div.known_mutation_details").length == 0 && $(this).parent("div.injectable_mutation_details").length == 0 && $(this).parent("div.fq_mutation_details").length == 0) {
 						txt += '<button type="button" class="add_new add_aa_form">Add same AA - Original</button>' + "\n";
 						txt += '<button type="button" class="add_new add_dna_form">Add same Nucleotide - Original</button>' + "\n";
 						txt += '<button type="button" class="add_new add_aa_form_full">Add same AA</button>' + "\n";

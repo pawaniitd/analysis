@@ -525,7 +525,50 @@ div.paper_mutation_known div.known_mut_holder div.select_known_mutation {
 	top: -150px;
 }
 
+/*$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$*/
 
+div.paper_mutation_injectable div.injectable_mut_holder div.select_injectable_mutation {
+    background-color: #EEEEEE;
+    border-color: #DEDEDE;
+    border-style: solid;
+    border-width: 2px;
+    margin: 10px;
+    padding: 10px;
+}
+
+#mutation_forms div.injectable_mutation_details div.mut_data button.close_mut_form {
+	top: -150px;
+}
+
+#mutation_forms div.paper_mutation_injectable {
+	background-color: #F9F9F9;
+    border-color: #EEEEEE;
+    border-style: solid;
+    border-width: 1px;
+    padding: 10px 0;
+}
+
+
+div.paper_mutation_fq div.fq_mut_holder div.select_fq_mutation {
+    background-color: #EEEEEE;
+    border-color: #DEDEDE;
+    border-style: solid;
+    border-width: 2px;
+    margin: 10px;
+    padding: 10px;
+}
+
+#mutation_forms div.fq_mutation_details div.mut_data button.close_mut_form {
+	top: -150px;
+}
+
+#mutation_forms div.paper_mutation_fq {
+	background-color: #F9F9F9;
+    border-color: #EEEEEE;
+    border-style: solid;
+    border-width: 1px;
+    padding: 10px 0;
+}
 
 
 /*
